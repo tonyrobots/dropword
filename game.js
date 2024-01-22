@@ -21,8 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function initializeGame() {
     // Logic to initialize game
-    console.log(`${wordlist.length} words loaded`);
-    // addRowsToGrid(visibleRows); // add a bank of rows to grid to drop in as words are removed
+    addRowsToGrid(4); // add a bank of rows to grid to drop in as words are removed
   }
 
   // start game
@@ -39,6 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function renderGrid(grid) {
     console.log("rows in grid:", grid.length);
+
     const gameContainer = document.getElementById("game-container");
     gameContainer.innerHTML = ""; // Clear previous grid
     let onscreenGrid = grid.slice(0, visibleRows); // Only render the visible rows
@@ -56,6 +56,9 @@ document.addEventListener("DOMContentLoaded", () => {
       });
       gameContainer.appendChild(rowDiv);
     });
+    // console.log("Number of valid words in the grid:", countValidWordsInGrid());
+    console.log("Valid words in the grid:", findValidWordsInGrid());
+    console.log(grid);
   }
 
   function selectWords(wordlist, count) {
@@ -68,21 +71,24 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function generateGrid(words) {
-    let grid = Array.from({ length: 6 }, () => new Array(5).fill(""));
+    // Determine the number of rows based on the number of words
+    let numRows = words.length;
+    let grid = Array.from({ length: numRows }, () => new Array(5).fill(""));
+
+    // For each column, distribute the letters across random rows
     for (let col = 0; col < 5; col++) {
-      // For each column
-      let availableRows = [0, 1, 2, 3, 4, 5];
-      for (let word of words) {
-        // For each word
-        let letter = word[col];
-        let randomRowIndex = availableRows.splice(
-          Math.floor(Math.random() * availableRows.length),
-          1
-        )[0];
-        grid[randomRowIndex][col] = letter;
+      // Extract the letter for this column from each word
+      let columnLetters = words.map((word) => word[col] || ""); // Use an empty string if the letter doesn't exist
+
+      // Shuffle the letters to randomize their positions
+      let shuffledLetters = shuffleArray(columnLetters);
+
+      // Assign the shuffled letters to the grid
+      for (let row = 0; row < numRows; row++) {
+        grid[row][col] = shuffledLetters[row];
       }
     }
-    console.log("generated grid:", grid);
+
     return grid;
   }
 
@@ -159,6 +165,36 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  function findValidWordsInGrid() {
+    let validWords = [];
+
+    wordlist.forEach((word) => {
+      if (canFormWordInGrid(word)) {
+        validWords.push(word);
+      }
+    });
+
+    return validWords;
+  }
+  function countValidWordsInGrid() {
+    let validWords = findValidWordsInGrid();
+    return validWords.length;
+  }
+
+  function canFormWordInGrid(word) {
+    for (let col = 0; col < wordLength; col++) {
+      let letterFoundInColumn = false;
+      for (let row = 0; row < 6; row++) {
+        if (grid[row][col] === word[col]) {
+          letterFoundInColumn = true;
+          break;
+        }
+      }
+      if (!letterFoundInColumn) return false;
+    }
+    return true;
+  }
+
   function clearSelection() {
     // Clear the visual selection
     currentSelection.forEach((sel) => {
@@ -185,6 +221,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function updateGrid() {
+    const oldGrid = JSON.parse(JSON.stringify(grid)); // Deep copy of grid
+
     // Step 1: Apply disappearing animation
     currentSelection.forEach((sel) => {
       const cellDiv = getCellDiv(sel.rowIndex, sel.colIndex);
@@ -196,7 +234,7 @@ document.addEventListener("DOMContentLoaded", () => {
       updateGridData();
 
       // Step 3: Apply falling animation
-      applyFallingAnimation();
+      applyFallingAnimation(oldGrid);
 
       // Step 4: Re-render grid after falling animation completes
       setTimeout(() => {
@@ -208,11 +246,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function updateGridData() {
-    // Replenish the  filler rows if necessary
-    if (grid.length < visibleRows + 1) {
-      addRowsToGrid(visibleRows);
-    }
-
     // Shift letters down in each column of the visible part
     currentSelection.forEach((sel) => {
       for (let row = sel.rowIndex; row > 0; row--) {
@@ -228,20 +261,28 @@ document.addEventListener("DOMContentLoaded", () => {
         grid[row][col] = grid[row + 1][col];
       }
     }
+
+    // pop the last item in the grid since it's been copied down
+    grid.pop();
+
+    // Replenish the filler rows if necessary
+    if (grid.length < visibleRows + 3) {
+      addRowsToGrid(3);
+    }
   }
 
-  function applyFallingAnimation() {
-    grid.forEach((row, rowIndex) => {
-      if (rowIndex < visibleRows) {
-        // Ensure we only target visible rows
-        row.forEach((cell, colIndex) => {
-          const cellDiv = getCellDiv(rowIndex, colIndex);
-          if (cellDiv && cellDiv.textContent !== cell) {
-            cellDiv.classList.add("falling");
-          }
-        });
+  function applyFallingAnimation(oldGrid) {
+    for (let col = 0; col < 5; col++) {
+      for (let row = 0; row < visibleRows; row++) {
+        // Get the cell div in the current grid
+        const cellDiv = getCellDiv(row, col);
+
+        // Check if the cell content has changed position
+        if (cellDiv && oldGrid[row][col] !== grid[row][col]) {
+          cellDiv.classList.add("falling");
+        }
       }
-    });
+    }
   }
 
   function resetCellClasses() {
