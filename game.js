@@ -101,20 +101,32 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function selectLetter(rowIndex, colIndex, letter) {
-    // Check if a letter from this column is already selected
+    // Check if this specific cell is already selected
     const existingSelectionIndex = currentSelection.findIndex(
-      (sel) => sel.colIndex === colIndex
+      (sel) => sel.colIndex === colIndex && sel.rowIndex === rowIndex
     );
 
     if (existingSelectionIndex !== -1) {
+      // The cell is already selected - deselect it
+      toggleCellSelection(rowIndex, colIndex, false);
+      currentSelection.splice(existingSelectionIndex, 1);
+      return; // Exit the function as no new cell is being selected
+    }
+
+    // Check if another letter in this column is already selected
+    const existingColumnSelectionIndex = currentSelection.findIndex(
+      (sel) => sel.colIndex === colIndex
+    );
+
+    if (existingColumnSelectionIndex !== -1) {
       // Deselect the previously selected cell in this column
       toggleCellSelection(
-        currentSelection[existingSelectionIndex].rowIndex,
-        currentSelection[existingSelectionIndex].colIndex,
+        currentSelection[existingColumnSelectionIndex].rowIndex,
+        currentSelection[existingColumnSelectionIndex].colIndex,
         false
       );
       // Remove the existing selection from this column
-      currentSelection.splice(existingSelectionIndex, 1);
+      currentSelection.splice(existingColumnSelectionIndex, 1);
     }
 
     // Insert the new selection at the correct position
@@ -123,9 +135,15 @@ document.addEventListener("DOMContentLoaded", () => {
     // Select the new cell
     toggleCellSelection(rowIndex, colIndex, true);
 
+    // Sort the current selection by column index
+    currentSelection.sort((a, b) => a.colIndex - b.colIndex);
+
     // Check if a complete word is formed
     if (currentSelection.length === wordLength) {
-      validateWord(currentSelection.map((sel) => sel.letter).join(""));
+      // validate word after 200ms
+      setTimeout(() => {
+        validateWord(currentSelection.map((sel) => sel.letter).join(""));
+      }, 200);
     }
   }
 
