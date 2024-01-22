@@ -1,3 +1,5 @@
+import * as Ui from "./uiHandling.js";
+
 document.addEventListener("DOMContentLoaded", () => {
   // globals
   const visibleRows = 6; // Number of rows visible on the screen
@@ -9,7 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let completedWords = [];
   let currentSelection = [];
 
-  loadWordList("wordlist_5").then((words) => {
+  loadWordList("sgb-words").then((words) => {
     wordlist = words;
     const selectedWords = selectWords(wordlist, visibleRows);
     grid = generateGrid(selectedWords);
@@ -27,6 +29,18 @@ document.addEventListener("DOMContentLoaded", () => {
   // start game
   function startGame() {
     // Logic to start game
+    // might not need this function
+    gameLoop();
+  }
+
+  function gameLoop() {
+    //update score
+    document.getElementById("score").innerHTML = completedWords.length;
+    //update valid words
+    document.getElementById("valid-words").innerHTML = countValidWordsInGrid();
+    //update found words list
+    document.getElementById("found-words").innerHTML =
+      completedWords.join("<br /> ");
   }
 
   function loadWordList(filename) {
@@ -49,6 +63,9 @@ document.addEventListener("DOMContentLoaded", () => {
         let cellDiv = document.createElement("div");
         cellDiv.className = "grid-cell";
         cellDiv.textContent = cell;
+        if (cell === "?") {
+          cellDiv.classList.add("wildcard");
+        }
         cellDiv.addEventListener("click", () =>
           selectLetter(rowIndex, colIndex, cell)
         );
@@ -58,7 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     // console.log("Number of valid words in the grid:", countValidWordsInGrid());
     console.log("Valid words in the grid:", findValidWordsInGrid());
-    console.log(grid);
+    // console.log(grid);
   }
 
   function selectWords(wordlist, count) {
@@ -75,6 +92,8 @@ document.addEventListener("DOMContentLoaded", () => {
     let numRows = words.length;
     let grid = Array.from({ length: numRows }, () => new Array(5).fill(""));
 
+    const wildcardPct = 0.05; // percent chance a letter will be a wildcard
+
     // For each column, distribute the letters across random rows
     for (let col = 0; col < 5; col++) {
       // Extract the letter for this column from each word
@@ -85,7 +104,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Assign the shuffled letters to the grid
       for (let row = 0; row < numRows; row++) {
-        grid[row][col] = shuffledLetters[row];
+        // Check if this letter should be a wildcard
+        if (Math.random() < wildcardPct) {
+          grid[row][col] = "?";
+        } else {
+          grid[row][col] = shuffledLetters[row];
+        }
       }
     }
 
@@ -155,14 +179,30 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function validateWord(word) {
     console.log("Validating word:", word);
-    console.log("wordlist length:", wordlist.length);
+    // Check if the word contains a wildcard
+    if (word.includes("?")) {
+      // Find the first word in the wordlist that matches the pattern
+      const matchingWord = findMatchingWordWithWildcard(word);
+      if (matchingWord) {
+        // Replace the wildcard with the correct letter
+        word = matchingWord;
+      }
+    }
     if (wordlist.includes(word)) {
       completedWords.push(word);
       updateGrid(); // This will eventually clear the selection
     } else {
-      alert("Not a valid word!");
+      Ui.displayMessage("Not a valid word!", true);
       clearSelection(); // Clear the selection immediately for invalid word
     }
+  }
+
+  function findMatchingWordWithWildcard(word) {
+    let regexPattern = word.replace(/\?/g, "."); // Replace wildcard with regex dot
+    let regex = new RegExp("^" + regexPattern + "$", "i");
+
+    // Find the first word in the wordlist that matches the pattern
+    return wordlist.find((word) => regex.test(word));
   }
 
   function findValidWordsInGrid() {
@@ -185,11 +225,13 @@ document.addEventListener("DOMContentLoaded", () => {
     for (let col = 0; col < wordLength; col++) {
       let letterFoundInColumn = false;
       for (let row = 0; row < 6; row++) {
-        if (grid[row][col] === word[col]) {
+        // The letter matches or the cell contains a wildcard
+        if (grid[row][col] === word[col] || grid[row][col] === "?") {
           letterFoundInColumn = true;
           break;
         }
       }
+      // If no matching letter or wildcard was found in the column, the word can't be formed
       if (!letterFoundInColumn) return false;
     }
     return true;
@@ -241,6 +283,7 @@ document.addEventListener("DOMContentLoaded", () => {
         renderGrid(grid);
         resetCellClasses();
         clearSelection(); // Now clear the selection
+        gameLoop(); // do anything else that should happen each time the grid is updated
       }, 500); // match this with the falling animation duration
     }, 500); // match this with the disappearing animation duration
   }

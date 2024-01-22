@@ -3,11 +3,57 @@
   <head>
     <meta charset="UTF-8" />
     <title>Dropword</title>
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="styles2.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"
+      rel="stylesheet"
+    /> -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+    />
   </head>
   <body>
+    <header class="game-header">
+      <h1 id="gameName">DROPWORD</h1>
+
+      <!-- <nav class="header-buttons">
+        <button id="helpButton" title="Help">
+          <i class="fa-regular fa-circle-question"></i>
+        </button>
+        <button id="optionsButton" title="Options">
+          <i class="fa-solid fa-gear"></i>
+        </button>
+        <button id="statsButton" title="Stats">
+          <i class="fas fa-chart-bar"></i>
+        </button>
+      </nav> -->
+    </header>
+    <div class="stats-container" id="score-container">
+      <div class="stat" id="score"></div>
+      <div class="stats-label" id="score-label">words found</div>
+    </div>
+    <div class="stats-container" id="valid-words-container">
+      <div class="stat" id="valid-words"></div>
+
+      <div class="stats-label" id="valid-words-label">
+        words currently in grid
+      </div>
+    </div>
+    <div id="found-words-container">
+      <div id="found-words"></div>
+    </div>
+    <div id="gameMessage"></div>
+
     <div id="game-container"></div>
-    <script src="game.js"></script>
-    <!-- Adjust the path as needed -->
+
+    <script type="module" src="game.js"></script>
   </body>
 </html>
