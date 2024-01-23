@@ -3,11 +3,14 @@ import * as Ui from "./uiHandling.js";
 document.addEventListener("DOMContentLoaded", () => {
   // globals
   const startButton = document.getElementById("start-button");
+  const gridElement = document.getElementById("grid");
+
   const visibleRows = 5; // Number of rows visible on the screen
   const wordLength = 5;
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   const gameTime = 120; // game length in seconds
   const timeAddedPerWord = 10; // seconds added to the timer per word found
+  const wcChar = "⭐️"; // wildcard character
   let grid = [];
   let fillerGrid = [];
   let wordlist = [];
@@ -37,6 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
     true
   );
   renderGrid(grid);
+  gridElement.style.opacity = 0.5;
 
   function initializeGame() {
     // Logic to initialize game
@@ -54,6 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log(selectedWords);
     // hide start button
     startButton.style.display = "none";
+    gridElement.style.opacity = 1;
 
     // make all the tiles fall
     // setTimeout(() => {
@@ -129,7 +134,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const formattedTime = `${minutes}:${seconds.toString().padStart(2, "0")}`;
     const timerElement = document.getElementById("timer");
     timerElement.textContent = formattedTime;
-    if (timeRemaining < 10 && timeRemaining >= 0) {
+    if (timeRemaining < 15) {
       timerElement.parentElement.classList.add("alert");
     } else {
       timerElement.parentElement.classList.remove("alert");
@@ -146,6 +151,8 @@ document.addEventListener("DOMContentLoaded", () => {
     clearInterval(timerInterval);
     const timerElement = document.getElementById("timer");
     timerElement.textContent = "💀";
+    timerElement.parentElement.classList.remove("alert");
+
     gameOver = true;
     timeRemaining = 0;
     if (completedWords.length > 15) {
@@ -183,7 +190,7 @@ document.addEventListener("DOMContentLoaded", () => {
         let cellDiv = document.createElement("div");
         cellDiv.className = "grid-cell";
         cellDiv.textContent = cell;
-        if (cell === "?") {
+        if (cell === wcChar) {
           cellDiv.classList.add("wildcard");
         }
         cellDiv.addEventListener("click", () =>
@@ -226,7 +233,7 @@ document.addEventListener("DOMContentLoaded", () => {
       for (let row = 0; row < numRows; row++) {
         // Check if this letter should be a wildcard
         if (Math.random() < wildcardPct && !empty) {
-          grid[row][col] = "?";
+          grid[row][col] = wcChar;
         } else {
           grid[row][col] = shuffledLetters[row];
         }
@@ -272,9 +279,9 @@ document.addEventListener("DOMContentLoaded", () => {
       selectLetter(row, col, letter);
     } else {
       // if no matching letter is in the focus column, select the first wildcard
-      const row = grid.findIndex((row) => row[col] === "?");
+      const row = grid.findIndex((row) => row[col] === wcChar);
       if (row !== -1) {
-        selectLetter(row, col, "?");
+        selectLetter(row, col, wcChar);
       }
     }
   }
@@ -337,7 +344,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function validateWord(word) {
     console.log("Validating word:", word);
     // Check if the word contains a wildcard
-    if (word.includes("?")) {
+    if (word.includes(wcChar)) {
       // Find the first word in the wordlist that matches the pattern
       const matchingWord = findMatchingWordWithWildcard(word);
       if (matchingWord) {
@@ -357,7 +364,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function findMatchingWordWithWildcard(word) {
-    let regexPattern = word.replace(/\?/g, "."); // Replace wildcard with regex dot
+    let regexPattern = word.replaceAll(wcChar, "."); // Replace wildcard with regex dot
     let regex = new RegExp("^" + regexPattern + "$", "i");
 
     // Find the first word in the wordlist that matches the pattern
@@ -385,7 +392,7 @@ document.addEventListener("DOMContentLoaded", () => {
       let letterFoundInColumn = false;
       for (let row = 0; row < visibleRows; row++) {
         // The letter matches or the cell contains a wildcard
-        if (grid[row][col] === word[col] || grid[row][col] === "?") {
+        if (grid[row][col] === word[col] || grid[row][col] === wcChar) {
           letterFoundInColumn = true;
           break;
         }
