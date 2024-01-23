@@ -2,13 +2,14 @@ import * as Ui from "./uiHandling.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   // globals
-  const startButton = document.getElementById("start-game");
-  const visibleRows = 6; // Number of rows visible on the screen
+  const startButton = document.getElementById("start-button");
+  const visibleRows = 5; // Number of rows visible on the screen
   const wordLength = 5;
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   const gameTime = 120; // game length in seconds
   const timeAddedPerWord = 10; // seconds added to the timer per word found
   let grid = [];
+  let fillerGrid = [];
   let wordlist = [];
   let completedWords = [];
   let currentSelection = [];
@@ -26,25 +27,39 @@ document.addEventListener("DOMContentLoaded", () => {
   loadWordList("sgb-words").then((words) => {
     wordlist = words;
     // show start button
-    startButton.textContent = "Start Game";
+    startButton.textContent = "Let's Go!";
     startButton.style.display = "block";
   });
 
+  // generate and render empty grid
+  grid = generateGrid(
+    ["?????", "?????", "?????", "?????", "?????", "?????"],
+    true
+  );
+  renderGrid(grid);
+
   function initializeGame() {
     // Logic to initialize game
-    addRowsToGrid(4); // add a bank of rows to grid to drop in as words are removed
+    addRowsToFillerGrid(4); // add a bank of rows to filler grid to drop in as words are removed
     timeRemaining = 120; // 2 minutes in seconds
     focusCol = 0;
+    completedWords = [];
   }
 
-  // start game
   function startGame() {
+    gameOver = false;
     const selectedWords = chooseWords(wordlist, visibleRows);
     grid = generateGrid(selectedWords);
     renderGrid(grid);
     console.log(selectedWords);
     // hide start button
     startButton.style.display = "none";
+
+    // make all the tiles fall
+    // setTimeout(() => {
+    //   applyFallingAnimation([5, 5, 5, 5, 5]);
+    // }, 500);
+
     initializeGame();
     startTimer();
     gameLoop();
@@ -54,10 +69,18 @@ document.addEventListener("DOMContentLoaded", () => {
     //update score
     document.getElementById("score").innerHTML = completedWords.length;
     //update valid words
-    document.getElementById("valid-words").innerHTML = countValidWordsInGrid();
+    let validWordsCount = countValidWordsInGrid();
+    document.getElementById("valid-words").innerHTML = validWordsCount;
+
     //update found words list
     document.getElementById("found-words").innerHTML =
       completedWords.join("<br /> ");
+
+    // if no valid words left, game over!
+    if (validWordsCount === 0) {
+      endGame("No valid words left in the grid!");
+      return;
+    }
   }
 
   function startTimer() {
@@ -77,7 +100,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const minutes = Math.floor(timeRemainingDisplay / 60);
     const seconds = timeRemainingDisplay % 60;
     const formattedTime = `${minutes}:${seconds.toString().padStart(2, "0")}`;
-    document.getElementById("timer").textContent = formattedTime;
+    const timerElement = document.getElementById("timer");
+    timerElement.textContent = formattedTime;
+    if (timeRemaining < 10 && timeRemaining >= 0) {
+      timerElement.parentElement.classList.add("alert");
+    } else {
+      timerElement.parentElement.classList.remove("alert");
+    }
   }
 
   function addTime(seconds) {
@@ -86,18 +115,23 @@ document.addEventListener("DOMContentLoaded", () => {
     updateTimerDisplay();
   }
 
-  function endGame() {
+  function endGame(message = "Time's up!") {
     clearInterval(timerInterval);
+    const timerElement = document.getElementById("timer");
+    timerElement.textContent = "💀";
     gameOver = true;
     timeRemaining = 0;
-    Ui.triggerConfetti();
+    if (completedWords.length > 15) {
+      Ui.triggerConfetti();
+    }
+    Ui.displayMessage(message);
     Ui.displayMessage(
-      "Game Over! You found " + completedWords.length + " words!"
+      "Game Over! You found " + completedWords.length + " words."
     );
     // show start button after 3 seconds
     setTimeout(() => {
       startButton.style.display = "block";
-      startButton.textContent = "Play Again";
+      startButton.textContent = "One more time!";
     }, 3000);
   }
 
@@ -111,8 +145,9 @@ document.addEventListener("DOMContentLoaded", () => {
   function renderGrid(grid) {
     console.log("rows in grid:", grid.length);
 
-    const gameContainer = document.getElementById("game-container");
-    gameContainer.innerHTML = ""; // Clear previous grid
+    const gridContainer = document.getElementById("grid");
+
+    gridContainer.innerHTML = ""; // Clear previous grid
     let onscreenGrid = grid.slice(0, visibleRows); // Only render the visible rows
     onscreenGrid.forEach((row, rowIndex) => {
       let rowDiv = document.createElement("div");
@@ -129,7 +164,7 @@ document.addEventListener("DOMContentLoaded", () => {
         );
         rowDiv.appendChild(cellDiv);
       });
-      gameContainer.appendChild(rowDiv);
+      gridContainer.appendChild(rowDiv);
     });
     // console.log("Number of valid words in the grid:", countValidWordsInGrid());
     console.log("Valid words in the grid:", findValidWordsInGrid());
@@ -145,12 +180,12 @@ document.addEventListener("DOMContentLoaded", () => {
     return selected;
   }
 
-  function generateGrid(words) {
+  function generateGrid(words, empty = false) {
     // Determine the number of rows based on the number of words
     let numRows = words.length;
     let grid = Array.from({ length: numRows }, () => new Array(5).fill(""));
 
-    const wildcardPct = 0.05; // percent chance a letter will be a wildcard
+    const wildcardPct = 0.04; // percent chance a letter will be a wildcard
 
     // For each column, distribute the letters across random rows
     for (let col = 0; col < 5; col++) {
@@ -163,7 +198,7 @@ document.addEventListener("DOMContentLoaded", () => {
       // Assign the shuffled letters to the grid
       for (let row = 0; row < numRows; row++) {
         // Check if this letter should be a wildcard
-        if (Math.random() < wildcardPct) {
+        if (Math.random() < wildcardPct && !empty) {
           grid[row][col] = "?";
         } else {
           grid[row][col] = shuffledLetters[row];
@@ -174,10 +209,10 @@ document.addEventListener("DOMContentLoaded", () => {
     return grid;
   }
 
-  function addRowsToGrid(numRows) {
+  function addRowsToFillerGrid(numRows) {
     const newRows = generateGrid(chooseWords(wordlist, numRows));
-    grid = grid.concat(newRows);
-    console.log("added rows to grid:", newRows.length);
+    fillerGrid = fillerGrid.concat(newRows);
+    console.log("added rows to filler grid:", newRows.length);
   }
 
   function shuffleArray(array) {
@@ -190,15 +225,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function handleKeydown(e) {
     if (gameOver) return;
+
+    // only accept letters and backspace
+    if (!alphabet.includes(e.key.toUpperCase()) && e.key !== "Backspace")
+      return;
+
     // if a matching letter is in the focus column, select the first match
     const letter = e.key.toUpperCase();
 
     // handle backspace
     if (e.key === "Backspace") {
-      // unselect the letter in current focus column (if there is one)
-      // TODO
-      // decrement focus by 1
-      focusCol = (focusCol - 1) % 5;
+      clearSelection();
+      return;
     }
     const col = focusCol;
 
@@ -253,7 +291,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Select the new cell
     toggleCellSelection(rowIndex, colIndex, true);
-    animateLetterToWord(rowIndex, colIndex, letter);
+    // animateLetterToWord(rowIndex, colIndex, letter);
     // move focus to selected column + 1
     focusCol = (colIndex + 1) % wordLength;
 
@@ -318,7 +356,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function canFormWordInGrid(word) {
     for (let col = 0; col < wordLength; col++) {
       let letterFoundInColumn = false;
-      for (let row = 0; row < 6; row++) {
+      for (let row = 0; row < visibleRows; row++) {
         // The letter matches or the cell contains a wildcard
         if (grid[row][col] === word[col] || grid[row][col] === "?") {
           letterFoundInColumn = true;
@@ -339,6 +377,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Reset the current selection
     currentSelection = [];
+    focusCol = 0;
   }
 
   function toggleCellSelection(rowIndex, colIndex, isSelected) {
@@ -390,27 +429,27 @@ document.addEventListener("DOMContentLoaded", () => {
         grid[row][sel.colIndex] = grid[row - 1][sel.colIndex];
       }
       // Pull a letter from the first filler row into the top visible row
-      grid[0][sel.colIndex] = grid[6][sel.colIndex];
+      grid[0][sel.colIndex] = fillerGrid[0][sel.colIndex];
     });
 
-    // Shift the filler part of the grid down
-    for (let row = 6; row < grid.length - 1; row++) {
+    // Shift the filler grid down
+    for (let row = 0; row < fillerGrid.length - 1; row++) {
       for (let col = 0; col < 5; col++) {
-        grid[row][col] = grid[row + 1][col];
+        fillerGrid[row][col] = fillerGrid[row + 1][col];
       }
     }
 
-    // pop the last item in the grid since it's been copied down
-    grid.pop();
+    // pop the last item in the fillergrid since it's been copied down
+    fillerGrid.pop();
 
     // Replenish the filler rows if necessary
-    if (grid.length < visibleRows + 3) {
-      addRowsToGrid(3);
+    if (fillerGrid.length < 3) {
+      addRowsToFillerGrid(3);
     }
   }
 
   function applyFallingAnimation(disappearingRowIndices) {
-    for (let col = 0; col < 5; col++) {
+    for (let col = 0; col < wordLength; col++) {
       for (let row = 0; row < visibleRows; row++) {
         // Get the cell div in the current grid
         const cellDiv = getCellDiv(row, col);

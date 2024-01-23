@@ -19,53 +19,60 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
     />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   </head>
   <body>
     <header class="game-header">
       <h1 id="gameName">DROPWORD</h1>
 
-      <!-- <nav class="header-buttons">
+      <nav class="header-buttons">
         <button id="helpButton" title="Help">
           <i class="fa-regular fa-circle-question"></i>
         </button>
-        <button id="optionsButton" title="Options">
+        <button id="optionsButton" title="Options" style="display: none">
           <i class="fa-solid fa-gear"></i>
         </button>
-        <button id="statsButton" title="Stats">
+        <button id="statsButton" title="Stats" style="display: none">
           <i class="fas fa-chart-bar"></i>
         </button>
-      </nav> -->
+      </nav>
     </header>
-    <div class="stats-container" id="score-container">
-      <div class="stat" id="score"></div>
-      <div class="stats-label" id="score-label">words found</div>
-    </div>
-    <div class="stats-container" id="valid-words-container">
-      <div class="stat" id="valid-words"></div>
 
-      <div class="stats-label" id="valid-words-label">
-        words currently in grid
+    <div id="game-container">
+      <div id="top-row">
+        <div class="stats-container" id="valid-words-container">
+          <div class="stats-label" id="valid-words-label">words in grid</div>
+          <div class="stat" id="valid-words">0</div>
+        </div>
+        <div id="timer-container">
+          <div id="timer-label" class="stats-label">Time Left</div>
+          <div id="timer">2:00</div>
+        </div>
+        <div class="stats-container" id="score-container">
+          <div class="stats-label" id="score-label">words found</div>
+
+          <div class="stat" id="score">0</div>
+        </div>
+      </div>
+
+      <div id="grid-container">
+        <div id="grid"></div>
+      </div>
+
+      <div id="found-words-container">
+        <div id="found-words"></div>
+      </div>
+      <div id="gameMessage"></div>
+
+      <div id="word-construction">
+        <div id="slot-1" class="letter-block grid-cell"></div>
+        <div id="slot-2" class="letter-block grid-cell"></div>
+        <div id="slot-3" class="letter-block grid-cell"></div>
+        <div id="slot-4" class="letter-block grid-cell"></div>
+        <div id="slot-5" class="letter-block grid-cell"></div>
       </div>
     </div>
-    <div id="found-words-container">
-      <div id="found-words"></div>
-    </div>
-    <div id="gameMessage"></div>
-    <div id="timer-container">
-      <div id="timer">2:00</div>
-    </div>
-    <div id="game-container"></div>
-    <div id="word-construction">
-      <div id="slot-1" class="letter-block grid-cell"></div>
-      <div id="slot-2" class="letter-block grid-cell"></div>
-      <div id="slot-3" class="letter-block grid-cell"></div>
-      <div id="slot-4" class="letter-block grid-cell"></div>
-      <div id="slot-5" class="letter-block grid-cell"></div>
-    </div>
-
-    <div id="start-button-container">
-      <button id="start-game">Start Game</button>
-    </div>
+    <button id="start-button">Let's Go!</button>
     <script type="module" src="game.js"></script>
   </body>
 </html>
