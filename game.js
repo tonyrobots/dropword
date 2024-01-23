@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let focusCol = 0;
   let timeRemaining = gameTime;
   let timerInterval;
-  let gameOver = false;
+  let gameOver = true;
 
   startButton.addEventListener("click", startGame);
   // add keyboard support for letter selection
@@ -40,6 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
     true
   );
   renderGrid(grid);
+
   gridElement.style.opacity = 0.5;
 
   function initializeGame() {
@@ -52,6 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function startGame() {
     gameOver = false;
+
     const selectedWords = chooseWords(wordlist, visibleRows);
     grid = generateGrid(selectedWords);
     renderGrid(grid);
@@ -59,11 +61,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // hide start button
     startButton.style.display = "none";
     gridElement.style.opacity = 1;
-
-    // make all the tiles fall
-    // setTimeout(() => {
-    //   applyFallingAnimation([5, 5, 5, 5, 5]);
-    // }, 500);
 
     initializeGame();
     startTimer();
@@ -325,7 +322,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Select the new cell
     toggleCellSelection(rowIndex, colIndex, true);
-    // animateLetterToWord(rowIndex, colIndex, letter);
+    animateLetterToWord(rowIndex, colIndex, letter);
     // move focus to selected column + 1
     focusCol = (colIndex + 1) % wordLength;
 
@@ -357,7 +354,7 @@ document.addEventListener("DOMContentLoaded", () => {
       addTime(timeAddedPerWord);
       updateGrid(); // This will eventually clear the selection
     } else {
-      Ui.displayMessage("Not a valid word!", true);
+      Ui.displayMessage("nope", true);
       clearSelection(); // Clear the selection immediately for invalid word
       clearWordConstruction(); // clear the staging area
     }
@@ -491,6 +488,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // Check if the cell is above the disappearing cells for this column
         if (cellDiv && disappearingRowIndices[col] > row) {
           cellDiv.classList.add("falling");
+          cellDiv.style.transform = `translateY(${cellDiv.offsetHeight}px)`;
         }
       }
     }
