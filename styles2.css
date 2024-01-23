@@ -43,7 +43,7 @@ h1 {
 }
 
 #game-container {
-  margin-top: 60px; /* This should be enough to clear the absolute positioned stats containers */
+  margin-top: 0px; /* This should be enough to clear the absolute positioned stats containers */
   position: relative;
   max-width: 500px; /* Adjust based on your grid size */
 }
@@ -94,7 +94,7 @@ h1 {
   opacity: 0; /* Fade out the cell */
 }
 .grid-cell.wildcard {
-  color: #d9534f; /* Make the wildcard red, for example */
+  color: #33904d;
   font-weight: bold;
 }
 
@@ -217,6 +217,64 @@ h1 {
   }
 
   #game-container {
-    margin-top: 20px;
+    margin-top: 0px;
   }
+}
+
+#word-construction {
+  display: flex;
+  justify-content: start; /* Align letters to the start */
+  align-items: left; /* Center items vertically */
+  min-height: 80px;
+  margin-top: 10px;
+  padding: 5px;
+}
+.letter-block {
+  display: inline-flex; /* Use flexbox for centering text inside the block
+  justify-content: center; */
+}
+
+.moving-letter {
+  transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+  position: absolute; /* Position the letters absolutely to move them */
+  opacity: 0; /* Letters start out invisible */
+}
+
+#timer-container {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+#timer {
+  font-size: 2em; /* Large font size for easy reading */
+  font-weight: bold;
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+#start-button-container {
+  margin: 20px 0;
+}
+
+#start-game {
+  padding: 10px 20px;
+  font-size: 1.2em;
+  cursor: pointer;
+  background-color: green;
+  color: #ffffff;
+  border: none;
+  border-radius: 5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  transition: background-color 0.3s;
+  display: none;
+}
+
+#start-game:hover {
+  background-color: #0f5925;
+}
+
+#start-game:focus {
+  outline: none;
 }

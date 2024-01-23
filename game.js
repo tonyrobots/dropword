@@ -2,34 +2,45 @@ import * as Ui from "./uiHandling.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   // globals
+  const startButton = document.getElementById("start-game");
   const visibleRows = 6; // Number of rows visible on the screen
-
   const wordLength = 5;
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const gameTime = 120; // game length in seconds
+  const timeAddedPerWord = 10; // seconds added to the timer per word found
   let grid = [];
   let wordlist = [];
   let completedWords = [];
   let currentSelection = [];
+  let timeRemaining = gameTime;
+  let timerInterval;
+  let gameOver = false;
+
+  startButton.addEventListener("click", startGame);
 
   loadWordList("sgb-words").then((words) => {
     wordlist = words;
-    const selectedWords = selectWords(wordlist, visibleRows);
-    grid = generateGrid(selectedWords);
-    renderGrid(grid);
-    console.log(selectedWords);
-    initializeGame();
-    startGame();
+    // show start button
+    startButton.textContent = "Start Game";
+    startButton.style.display = "block";
   });
 
   function initializeGame() {
     // Logic to initialize game
     addRowsToGrid(4); // add a bank of rows to grid to drop in as words are removed
+    let timeRemaining = 120; // 2 minutes in seconds
   }
 
   // start game
   function startGame() {
-    // Logic to start game
-    // might not need this function
+    const selectedWords = chooseWords(wordlist, visibleRows);
+    grid = generateGrid(selectedWords);
+    renderGrid(grid);
+    console.log(selectedWords);
+    // hide start button
+    startButton.style.display = "none";
+    initializeGame();
+    startTimer();
     gameLoop();
   }
 
@@ -41,6 +52,47 @@ document.addEventListener("DOMContentLoaded", () => {
     //update found words list
     document.getElementById("found-words").innerHTML =
       completedWords.join("<br /> ");
+  }
+
+  function startTimer() {
+    timerInterval = setInterval(() => {
+      if (timeRemaining < 0) {
+        endGame();
+        return;
+      }
+
+      timeRemaining--;
+      updateTimerDisplay();
+    }, 1000);
+  }
+
+  function updateTimerDisplay() {
+    let timeRemainingDisplay = Math.max(timeRemaining, 0); // Don't allow negative time
+    const minutes = Math.floor(timeRemainingDisplay / 60);
+    const seconds = timeRemainingDisplay % 60;
+    const formattedTime = `${minutes}:${seconds.toString().padStart(2, "0")}`;
+    document.getElementById("timer").textContent = formattedTime;
+  }
+
+  function addTime(seconds) {
+    timeRemaining += seconds;
+    // Make sure the timer display is updated immediately after adding time
+    updateTimerDisplay();
+  }
+
+  function endGame() {
+    clearInterval(timerInterval);
+    gameOver = true;
+    timeRemaining = 0;
+    Ui.triggerConfetti();
+    Ui.displayMessage(
+      "Game Over! You found " + completedWords.length + " words!"
+    );
+    // show start button after 3 seconds
+    setTimeout(() => {
+      startButton.style.display = "block";
+      startButton.textContent = "Play Again";
+    }, 3000);
   }
 
   function loadWordList(filename) {
@@ -78,7 +130,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // console.log(grid);
   }
 
-  function selectWords(wordlist, count) {
+  function chooseWords(wordlist, count) {
     let selected = [];
     for (let i = 0; i < count; i++) {
       const randomIndex = Math.floor(Math.random() * wordlist.length);
@@ -117,7 +169,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function addRowsToGrid(numRows) {
-    const newRows = generateGrid(selectWords(wordlist, numRows));
+    const newRows = generateGrid(chooseWords(wordlist, numRows));
     grid = grid.concat(newRows);
     console.log("added rows to grid:", newRows.length);
   }
@@ -131,6 +183,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function selectLetter(rowIndex, colIndex, letter) {
+    // Check if the game is over
+    if (gameOver) return;
+
     // Check if this specific cell is already selected
     const existingSelectionIndex = currentSelection.findIndex(
       (sel) => sel.colIndex === colIndex && sel.rowIndex === rowIndex
@@ -164,16 +219,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Select the new cell
     toggleCellSelection(rowIndex, colIndex, true);
+    animateLetterToWord(rowIndex, colIndex, letter);
 
     // Sort the current selection by column index
     currentSelection.sort((a, b) => a.colIndex - b.colIndex);
 
     // Check if a complete word is formed
     if (currentSelection.length === wordLength) {
-      // validate word after 200ms
+      // validate word after a delay
       setTimeout(() => {
         validateWord(currentSelection.map((sel) => sel.letter).join(""));
-      }, 200);
+      }, 300);
     }
   }
 
@@ -190,10 +246,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     if (wordlist.includes(word)) {
       completedWords.push(word);
+      addTime(timeAddedPerWord);
       updateGrid(); // This will eventually clear the selection
     } else {
       Ui.displayMessage("Not a valid word!", true);
       clearSelection(); // Clear the selection immediately for invalid word
+      clearWordConstruction(); // clear the staging area
     }
   }
 
@@ -258,17 +316,18 @@ document.addEventListener("DOMContentLoaded", () => {
         cellDiv.classList.add("selected");
       } else {
         cellDiv.classList.remove("selected");
+        removeLetterBlock(colIndex); // Remove the letter block from the word construction area
       }
     }
   }
 
   function updateGrid() {
-    const oldGrid = JSON.parse(JSON.stringify(grid)); // Deep copy of grid
-
+    let disappearingRowIndices = [];
     // Step 1: Apply disappearing animation
     currentSelection.forEach((sel) => {
       const cellDiv = getCellDiv(sel.rowIndex, sel.colIndex);
       cellDiv.classList.add("disappearing");
+      disappearingRowIndices.push(sel.rowIndex);
     });
 
     // Step 2: Update grid data after disappearing animation completes
@@ -276,7 +335,7 @@ document.addEventListener("DOMContentLoaded", () => {
       updateGridData();
 
       // Step 3: Apply falling animation
-      applyFallingAnimation(oldGrid);
+      applyFallingAnimation(disappearingRowIndices);
 
       // Step 4: Re-render grid after falling animation completes
       setTimeout(() => {
@@ -314,14 +373,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  function applyFallingAnimation(oldGrid) {
+  function applyFallingAnimation(disappearingRowIndices) {
     for (let col = 0; col < 5; col++) {
       for (let row = 0; row < visibleRows; row++) {
         // Get the cell div in the current grid
         const cellDiv = getCellDiv(row, col);
 
-        // Check if the cell content has changed position
-        if (cellDiv && oldGrid[row][col] !== grid[row][col]) {
+        // Check if the cell is above the disappearing cells for this column
+        if (cellDiv && disappearingRowIndices[col] > row) {
           cellDiv.classList.add("falling");
         }
       }
@@ -330,7 +389,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function resetCellClasses() {
     document.querySelectorAll(".grid-cell").forEach((cell) => {
-      cell.classList.remove("selected", "falling", "disappearing");
+      cell.classList.remove(
+        "selected",
+        "falling",
+        "disappearing",
+        "moving-letter"
+      );
     });
   }
 
@@ -340,5 +404,60 @@ document.addEventListener("DOMContentLoaded", () => {
         colIndex + 1
       })`
     );
+  }
+  function animateLetterToWord(rowIndex, colIndex, letter) {
+    const letterDiv = getCellDiv(rowIndex, colIndex);
+    const wordConstructionDiv = document.getElementById("word-construction");
+    const wordConstructionSlot = document.getElementById(
+      `slot-${colIndex + 1}`
+    );
+
+    // Clone the letter div to animate it
+    const clone = letterDiv.cloneNode(true);
+    clone.classList.add("moving-letter");
+
+    // Position the clone at the same position as the original letterDiv
+    const rect = letterDiv.getBoundingClientRect();
+    clone.style.position = "fixed";
+    clone.style.left = `${rect.left}px`;
+    clone.style.top = `${rect.top}px`;
+    clone.style.margin = "0"; // Remove margin as it's now absolutely positioned
+
+    // Append clone to body to allow free movement
+    document.body.appendChild(clone);
+
+    // Calculate the end position for the animation
+    const targetRect = wordConstructionDiv.getBoundingClientRect();
+    const transformX = targetRect.left - rect.left;
+    const transformY = targetRect.top - rect.top + window.scrollY; // Include scroll offset
+
+    // Start the animation
+    requestAnimationFrame(() => {
+      clone.style.transform = `translate(${transformX}px, ${transformY}px)`;
+      clone.style.opacity = "0"; // Fade out the clone
+
+      // After the animation completes, add the letter to the word construction area
+      setTimeout(() => {
+        // wordConstructionDiv.appendChild(createLetterBlock(letter)); // Add the letter block to the container
+        // add the letter block to the correct slot
+        // wordConstructionSlot.appendChild(createLetterBlock(letter));
+        wordConstructionSlot.innerHTML = letter;
+        wordConstructionSlot.classList.remove("disappearing");
+        clone.remove(); // Remove the animated clone
+      }, 200); // This timeout should match the transition duration
+    });
+  }
+
+  function removeLetterBlock(col) {
+    const wordConstructionSlot = document.getElementById(`slot-${col + 1}`);
+    wordConstructionSlot.innerHTML = "";
+    wordConstructionSlot.classList.add("disappearing");
+  }
+
+  function clearWordConstruction() {
+    const wordConstructionDiv = document.getElementById("word-construction");
+    for (let col = 0; col < wordLength; col++) {
+      removeLetterBlock(col);
+    }
   }
 });
