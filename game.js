@@ -84,6 +84,18 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function startTimer() {
+    Ui.setVisibilityByClass("grid-cell", true, "flex");
+    // remove event listener from timer
+    document
+      .getElementById("timer-container")
+      .removeEventListener("click", startTimer);
+    // add event listener to pause game
+    document
+      .getElementById("timer-container")
+      .addEventListener("click", pauseGame);
+
+    // start timer
+
     timerInterval = setInterval(() => {
       if (timeRemaining < 0) {
         endGame();
@@ -93,6 +105,21 @@ document.addEventListener("DOMContentLoaded", () => {
       timeRemaining--;
       updateTimerDisplay();
     }, 1000);
+  }
+
+  function pauseGame() {
+    clearInterval(timerInterval);
+    Ui.setVisibilityByClass("grid-cell", false);
+    Ui.displayMessage("Game paused, press timer again to resume.");
+
+    // remove event listener for pause
+    document
+      .getElementById("timer-container")
+      .removeEventListener("click", pauseGame);
+    // add event listener to resume game
+    document
+      .getElementById("timer-container")
+      .addEventListener("click", startTimer);
   }
 
   function updateTimerDisplay() {

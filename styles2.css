@@ -74,6 +74,7 @@ h1 {
   background-color: #fff;
   border-radius: 5px;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  box-sizing: border-box; /* Include the border in the element's dimensions */
   margin: 1px;
   cursor: pointer;
   display: flex;
@@ -84,8 +85,8 @@ h1 {
   color: #333;
   height: 20%;
   width: 20%;
-  max-height: 80px;
-  max-width: 80px;
+  max-height: 100px;
+  max-width: 100px;
   cursor: pointer;
   user-select: none; /* Prevents text selection */
   transition: transform 0.5s ease, opacity 0.5s ease; /* Smooth transition for movement and fading */
@@ -133,6 +134,7 @@ h1 {
 
 .stats-label {
   font-size: 0.75em;
+  line-height: 92%;
   text-transform: uppercase;
 }
 
@@ -240,7 +242,6 @@ h1 {
   color: #eee;
   padding: 5px 10px;
   border-radius: 5px;
-  width: 20%;
 }
 
 #timer {
@@ -258,7 +259,10 @@ h1 {
 
 #start-button {
   position: absolute;
-  top: 40%;
+  transform: translate(-50%, -50%);
+  top: 35%;
+  left: 50%;
+
   padding: 10px 20px;
   font-size: 1.2em;
   cursor: pointer;
