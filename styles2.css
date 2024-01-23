@@ -228,6 +228,7 @@ h1 {
   min-height: 80px;
   margin-top: 10px;
   padding: 5px;
+  display: none;
 }
 .letter-block {
   display: inline-flex; /* Use flexbox for centering text inside the block

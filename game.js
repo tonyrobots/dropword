@@ -12,11 +12,16 @@ document.addEventListener("DOMContentLoaded", () => {
   let wordlist = [];
   let completedWords = [];
   let currentSelection = [];
+  let focusCol = 0;
   let timeRemaining = gameTime;
   let timerInterval;
   let gameOver = false;
 
   startButton.addEventListener("click", startGame);
+  // add keyboard support for letter selection
+  document.addEventListener("keydown", (event) => {
+    handleKeydown(event);
+  });
 
   loadWordList("sgb-words").then((words) => {
     wordlist = words;
@@ -28,7 +33,8 @@ document.addEventListener("DOMContentLoaded", () => {
   function initializeGame() {
     // Logic to initialize game
     addRowsToGrid(4); // add a bank of rows to grid to drop in as words are removed
-    let timeRemaining = 120; // 2 minutes in seconds
+    timeRemaining = 120; // 2 minutes in seconds
+    focusCol = 0;
   }
 
   // start game
@@ -182,6 +188,32 @@ document.addEventListener("DOMContentLoaded", () => {
     return array;
   }
 
+  function handleKeydown(e) {
+    if (gameOver) return;
+    // if a matching letter is in the focus column, select the first match
+    const letter = e.key.toUpperCase();
+
+    // handle backspace
+    if (e.key === "Backspace") {
+      // unselect the letter in current focus column (if there is one)
+      // TODO
+      // decrement focus by 1
+      focusCol = (focusCol - 1) % 5;
+    }
+    const col = focusCol;
+
+    const row = grid.findIndex((row) => row[col] === letter);
+    if (row !== -1) {
+      selectLetter(row, col, letter);
+    } else {
+      // if no matching letter is in the focus column, select the first wildcard
+      const row = grid.findIndex((row) => row[col] === "?");
+      if (row !== -1) {
+        selectLetter(row, col, "?");
+      }
+    }
+  }
+
   function selectLetter(rowIndex, colIndex, letter) {
     // Check if the game is over
     if (gameOver) return;
@@ -195,6 +227,8 @@ document.addEventListener("DOMContentLoaded", () => {
       // The cell is already selected - deselect it
       toggleCellSelection(rowIndex, colIndex, false);
       currentSelection.splice(existingSelectionIndex, 1);
+      // set focus to this column
+      focusCol = colIndex;
       return; // Exit the function as no new cell is being selected
     }
 
@@ -220,6 +254,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // Select the new cell
     toggleCellSelection(rowIndex, colIndex, true);
     animateLetterToWord(rowIndex, colIndex, letter);
+    // move focus to selected column + 1
+    focusCol = (colIndex + 1) % wordLength;
 
     // Sort the current selection by column index
     currentSelection.sort((a, b) => a.colIndex - b.colIndex);
