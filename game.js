@@ -85,14 +85,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // if no valid words left, game over!
     if (validWordsCount === 0) {
-      endGame("No valid words left in the grid!");
+      endGame("There are no words left!");
       return;
     }
   }
 
   function startTimer() {
     // show grid and wordconstruction again, hide content area
-    Ui.setVisibilityByClass("grid-cell", true, "flex");
+    // Ui.setVisibilityByClass("grid-cell", true, "flex");
+    gridElement.style.visibility = "visible";
     wordConstructionDiv.style.visibility = "visible ";
 
     // remove event listener from timer
@@ -123,7 +124,8 @@ document.addEventListener("DOMContentLoaded", () => {
   function pauseGame() {
     clearInterval(timerInterval);
     // hide/show stuff
-    Ui.setVisibilityByClass("grid-cell", false);
+    // Ui.setVisibilityByClass("grid-cell", false);
+    gridElement.style.visibility = "hidden";
     wordConstructionDiv.style.visibility = "hidden";
     contentArea.style.display = "flex";
 
@@ -165,15 +167,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const timerElement = document.getElementById("timer");
     timerElement.textContent = "💀";
     timerElement.parentElement.classList.remove("alert");
+    clearWordConstruction();
+    clearSelection();
 
     gameOver = true;
     timeRemaining = 0;
     if (completedWords.length > 15) {
       Ui.triggerConfetti();
     }
-    Ui.displayMessage(message);
     Ui.displayMessage(
-      "Game Over! You found " + completedWords.length + " words."
+      message + " You found " + completedWords.length + " words."
     );
     // show start button after 3 seconds
     setTimeout(() => {
@@ -369,6 +372,7 @@ document.addEventListener("DOMContentLoaded", () => {
       completedWords.push(word);
       addTime(timeAddedPerWord);
       updateGrid(); // This will eventually clear the selection
+      animateWordConstructionSuccess();
     } else {
       Ui.displayMessage("nope", true);
       clearSelection(); // Clear the selection immediately for invalid word
@@ -583,12 +587,41 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  function animateWordConstructionSuccess() {
+    const letters = document.querySelectorAll(
+      ".word-construction .letter-block"
+    );
+    let delay = 0;
+
+    // Animate each letter
+    letters.forEach((letter, index) => {
+      setTimeout(() => {
+        letter.classList.add("enlarge");
+        setTimeout(() => letter.classList.remove("enlarge"), 100); // Duration of letter animation
+      }, delay);
+      delay += 100; // Increment delay for next letter
+    });
+
+    // Flash the background after all letters have been animated
+    setTimeout(() => {
+      const wordConstruction = document.querySelector("#word-construction");
+      wordConstruction.classList.add("flash-green");
+      setTimeout(() => wordConstruction.classList.remove("flash-green"), 600); // Duration of flash animation
+    }, delay);
+
+    // After all animations, clear the word (if applicable)
+    setTimeout(() => {
+      clearWordConstruction();
+    }, delay + 600);
+  }
+
   // modal handling
 
   // help button
   document.getElementById("helpButton").addEventListener("click", () => {
     // Code to show help modal
     document.getElementById("helpModal").style.display = "block";
+    pauseGame();
   });
 
   // close buttons

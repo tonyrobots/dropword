@@ -202,7 +202,7 @@ h1 {
   /* Add more styling as needed */
 }
 
-/* Keyframes for fading in and out */
+/* animations */
 @keyframes fadeInOut {
   0%,
   100% {
@@ -232,6 +232,25 @@ h1 {
   }
 }
 
+@keyframes enlarge {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.5);
+  }
+}
+
+@keyframes flashGreen {
+  0%,
+  100% {
+    background-color: #000;
+  }
+  50% {
+    background-color: green;
+  }
+}
+
 #word-construction {
   display: flex;
   margin: auto;
@@ -245,6 +264,11 @@ h1 {
   max-width: 460px;
   /* display: none; */
 }
+
+#word-construction.flash-green {
+  animation: flashGreen 0.3s ease 2;
+}
+
 .letter-block {
   display: flex; /* Use flexbox for centering text inside the block */
   aspect-ratio: 1 / 1;
@@ -259,6 +283,10 @@ h1 {
   max-width: 90px;
   user-select: none; /* Prevents text selection */
   transition: transform 0.5s ease, opacity 0.5s ease; /* Smooth transition for movement and fading */
+}
+
+.letter-block.enlarge {
+  animation: enlarge 0.1s ease forwards;
 }
 
 .moving-letter {
