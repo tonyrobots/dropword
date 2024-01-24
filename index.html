@@ -55,7 +55,8 @@
         </div>
       </div>
 
-      <div id="grid-container">
+      <div id="main-area">
+        <div id="content-area"></div>
         <div id="grid"></div>
         <div id="word-construction">
           <div id="slot-1" class="letter-block disappearing">_</div>
@@ -71,6 +72,91 @@
       </div>
       <div id="gameMessage"></div>
       <button id="start-button">Let's Go!</button>
+    </div>
+
+    <!-- Modal Structure -->
+    <div id="resultModal" class="modal">
+      <div class="modal-content">
+        <h3 id="resultHeader">Your Game</h3>
+        <button class="close-modal-button"><i class="fa fa-close"></i></button>
+
+        <div class="button-row">
+          <button id="modalShareButton" class="share-button button">
+            SHARE RESULT
+            <i class="fa-solid fa-share-nodes"></i>
+          </button>
+          <button id="playAgainButton" class="button play-again-button">
+            Play Again
+          </button>
+        </div>
+      </div>
+    </div>
+    <div id="helpModal" class="modal">
+      <div class="modal-content">
+        <button class="close-modal-button"><i class="fa fa-close"></i></button>
+        <h2>Welcome to Dropword!</h2>
+        <p>
+          The goal is to build 5-letter words from left to right, choosing one
+          letter from each column.
+        </p>
+
+        <p>
+          Valid words will disappear from the grid, and the remaining letters
+          will drop down to fill in the gaps.
+        </p>
+
+        <div class="grid-row">
+          <div class="grid-cell selected">F</div>
+          <div class="grid-cell">X</div>
+          <div class="grid-cell">X</div>
+          <div class="grid-cell">X</div>
+          <div class="grid-cell selected">D</div>
+        </div>
+        <div class="grid-row">
+          <div class="grid-cell">X</div>
+          <div class="grid-cell selected">O</div>
+          <div class="grid-cell">X</div>
+          <div class="grid-cell selected">N</div>
+          <div class="grid-cell">X</div>
+        </div>
+        <div class="grid-row">
+          <div class="grid-cell">X</div>
+          <div class="grid-cell">X</div>
+          <div class="grid-cell selected">U</div>
+          <div class="grid-cell">X</div>
+          <div class="grid-cell">X</div>
+        </div>
+      </div>
+
+      <p>...</p>
+      <p>Happy Dropwording!</p>
+    </div>
+
+    <div id="optionsModal" class="modal">
+      <div class="modal-content">
+        <button class="close-modal-button"><i class="fa fa-close"></i></button>
+        <h2>Options</h2>
+        <div class="option">
+          <label for="alphabetHelperToggle">Alphabet Helper:</label>
+
+          <input type="checkbox" id="alphabetHelperToggle" />
+        </div>
+        <p class="option-description">
+          Toggles the list of letter possibilities at the bottom of the screen.
+        </p>
+        <div class="option">
+          <label for="hardModeToggle">Hard Mode:</label>
+
+          <input type="checkbox" id="hardModeToggle" />
+        </div>
+        <p class="option-description">
+          Hard mode prevents you from guessing words that are not possible
+          answers, based on the letters you've already guessed.
+        </p>
+        <div class="feedback-link">
+          <a href="mailto:worderly@hellozito.com">Send Feedback</a>
+        </div>
+      </div>
     </div>
     <script type="module" src="game.js"></script>
   </body>

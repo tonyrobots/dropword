@@ -2,15 +2,20 @@ import * as Ui from "./uiHandling.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   // globals
-  const startButton = document.getElementById("start-button");
-  const gridElement = document.getElementById("grid");
-
   const visibleRows = 5; // Number of rows visible on the screen
   const wordLength = 5;
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   const gameTime = 120; // game length in seconds
   const timeAddedPerWord = 10; // seconds added to the timer per word found
   const wcChar = "⭐️"; // wildcard character
+
+  // dom objects
+  const helpModal = document.getElementById("helpModal");
+  const startButton = document.getElementById("start-button");
+  const gridElement = document.getElementById("grid");
+  const contentArea = document.getElementById("content-area");
+  const wordConstructionDiv = document.getElementById("word-construction");
+
   let grid = [];
   let fillerGrid = [];
   let wordlist = [];
@@ -86,7 +91,10 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function startTimer() {
+    // show grid and wordconstruction again, hide content area
     Ui.setVisibilityByClass("grid-cell", true, "flex");
+    wordConstructionDiv.style.visibility = "visible ";
+
     // remove event listener from timer
     document
       .getElementById("timer-container")
@@ -95,6 +103,9 @@ document.addEventListener("DOMContentLoaded", () => {
     document
       .getElementById("timer-container")
       .addEventListener("click", pauseGame);
+
+    // hide content area
+    contentArea.style.display = "none";
 
     // start timer
 
@@ -111,8 +122,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function pauseGame() {
     clearInterval(timerInterval);
+    // hide/show stuff
     Ui.setVisibilityByClass("grid-cell", false);
-    Ui.displayMessage("Game paused, press timer again to resume.");
+    wordConstructionDiv.style.visibility = "hidden";
+    contentArea.style.display = "flex";
+
+    contentArea.textContent = "Game Paused. Press timer to resume.";
+    // Ui.displayMessage("Game paused, press timer again to resume.");
 
     // remove event listener for pause
     document
@@ -562,9 +578,29 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function clearWordConstruction() {
-    const wordConstructionDiv = document.getElementById("word-construction");
     for (let col = 0; col < wordLength; col++) {
       removeLetterBlock(col);
+    }
+  }
+
+  // modal handling
+
+  // help button
+  document.getElementById("helpButton").addEventListener("click", () => {
+    // Code to show help modal
+    document.getElementById("helpModal").style.display = "block";
+  });
+
+  // close buttons
+  const closeButtons = document.querySelectorAll(".close-modal-button");
+  closeButtons.forEach((button) => {
+    button.addEventListener("click", closeModal);
+  });
+
+  function closeModal(event) {
+    let modal = event.target.closest(".modal");
+    if (modal) {
+      modal.style.display = "none";
     }
   }
 });

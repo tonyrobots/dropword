@@ -50,6 +50,15 @@ h1 {
   margin-top: 20px;
 }
 
+#content-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: auto;
+  max-width: 600px;
+}
+
 #top-row {
   display: flex;
   justify-content: space-between;
@@ -265,6 +274,7 @@ h1 {
   color: #eee;
   padding: 5px 10px;
   border-radius: 5px;
+  cursor: pointer;
 }
 
 #timer {
@@ -288,7 +298,7 @@ h1 {
   padding: 10px 20px;
   font-size: 1.2em;
   cursor: pointer;
-  background-color: #333;
+  background-color: #068b0d;
   color: #ffffff;
   border: solid 5px #fff;
   border-radius: 5px;
@@ -300,4 +310,62 @@ h1 {
 
 #start-button:hover {
   background-color: #10993b;
+}
+
+/* modal stuff */
+
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  font-family: "Poppins", sans-serif;
+  font-weight: normal;
+  z-index: 10; /* Sit on top */
+  border-radius: 8px;
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+}
+
+.modal-content {
+  /* Existing styles */
+  padding: 20px; /* Increased padding */
+  width: 90%;
+  box-sizing: border-box; /* Include padding in width calculation */
+  position: relative;
+  background-color: #fefefe;
+  margin: 5% auto; /* X% from the top and centered */
+  /* padding: 10px 60px 10px 20px; Adjust top and right padding */
+  /* padding-top: 25px; */
+  border-radius: 15px;
+  border: 3px solid #888;
+  max-width: 700px;
+  /* min-height: 300px; */
+}
+
+.close-modal-button {
+  color: #000;
+  position: absolute;
+
+  font-size: 32px;
+  font-weight: 700;
+  background-color: transparent;
+  border: 0;
+  top: 4px; /* Adjust for better spacing */
+  right: 8px; /* Adjust for better spacing */
+  font-size: 24px; /* Adjust size for mobile screens */
+}
+
+@media (max-width: 600px) {
+  .modal-content {
+    width: 95%; /* Even wider on very small screens */
+    padding: 15px; /* Adjust padding for smaller screens */
+  }
+  .close-modal-button {
+    font-size: 20px; /* Smaller close button on very small screens */
+    top: 4px; /* Adjust for better spacing */
+    right: 4px; /* Adjust for better spacing */
+  }
 }
