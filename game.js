@@ -608,7 +608,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const wordConstruction = document.querySelector("#word-construction");
       wordConstruction.classList.add("success");
       setTimeout(() => wordConstruction.classList.remove("success"), 600); // Duration of flash animation
-    }, delay - 300);
+    }, 100);
 
     // After all animations, clear the word (if applicable)
     setTimeout(() => {

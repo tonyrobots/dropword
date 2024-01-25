@@ -301,6 +301,7 @@ h1 {
   }
   to {
     transform: scale(1.75);
+    border: 0;
   }
 }
 
@@ -329,7 +330,6 @@ h1 {
   margin: auto;
   /* justify-content: start;  */
   justify-content: center;
-
   /* align-items: left; Center items vertically */
   margin-top: 5px;
   background-color: #333;
@@ -347,19 +347,21 @@ h1 {
 }
 
 .letter-block {
-  display: flex; /* Use flexbox for centering text inside the block */
-  aspect-ratio: 1 / 1;
+  /* aspect-ratio: 1/1; */
+  display: flex;
   justify-content: center;
   align-items: center;
   font-size: 3em;
   font-weight: bold;
   color: #fff;
+  border: 2px solid #fff;
   height: 20%;
   width: 20%;
   max-height: 90px;
   max-width: 90px;
-  user-select: none; /* Prevents text selection */
-  transition: transform 0.5s ease, opacity 0.5s ease; /* Smooth transition for movement and fading */
+  min-height: 75px;
+  user-select: none;
+  transition: transform 0.5s ease, opacity 0.5s ease;
 }
 
 .letter-block.enlarge {
