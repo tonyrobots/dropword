@@ -51,7 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function initializeGame() {
     // Logic to initialize game
     addRowsToFillerGrid(4); // add a bank of rows to filler grid to drop in as words are removed
-    timeRemaining = 120; // 2 minutes in seconds
+    timeRemaining = gameTime;
     focusCol = 0;
     completedWords = [];
   }
@@ -178,6 +178,30 @@ document.addEventListener("DOMContentLoaded", () => {
     Ui.displayMessage(
       message + " You found " + completedWords.length + " words."
     );
+
+    // Populate missed words
+    let validWordsCount = countValidWordsInGrid();
+    if (validWordsCount > 0) {
+      const missedWords = findValidWordsInGrid(10); // Implement this function to get missed words
+      const missedWordsList = document.getElementById("missed-words");
+      missedWords.forEach((word) => {
+        missedWordsList.innerHTML += `<div>${word}</div>`;
+      });
+      if (validWordsCount > 10) {
+        missedWordsList.innerHTML += `<div>...and ${
+          validWordsCount - 10
+        } more</div>`;
+      }
+    }
+    document.getElementById("found-words-container").style.display = "block";
+    document.getElementById("missed-words-container").style.display = "block";
+    // hide grid and wordconstruction -- there should be a nicer way to handle this
+    // make grid 30% opacity
+    gridElement.style.opacity = 0.3;
+    // gridElement.style.visibility = "hidden";
+    // contentArea.style.visibility = "visible";
+    wordConstructionDiv.style.visibility = "hidden";
+
     // show start button after 3 seconds
     setTimeout(() => {
       startButton.style.display = "block";
@@ -381,8 +405,12 @@ document.addEventListener("DOMContentLoaded", () => {
       updateGrid(); // This will eventually clear the selection
     } else {
       Ui.displayMessage("nope", true);
-      clearSelection(); // Clear the selection immediately for invalid word
-      clearWordConstruction(); // clear the staging area
+      animateWordConstructionFailure();
+      // give time for animation to finish
+      setTimeout(() => {
+        clearSelection(); // Clear the selection immediately for invalid word
+        clearWordConstruction(); // clear the staging area
+      }, 300);
     }
   }
 
@@ -394,17 +422,22 @@ document.addEventListener("DOMContentLoaded", () => {
     return wordlist.find((word) => regex.test(word));
   }
 
-  function findValidWordsInGrid() {
+  function findValidWordsInGrid(limit = 0) {
     let validWords = [];
 
-    wordlist.forEach((word) => {
-      if (canFormWordInGrid(word)) {
-        validWords.push(word);
-      }
-    });
+    let count = 0;
 
+    //check each word in the wordlist to see if it's in the grid
+    for (let i = 0; i < wordlist.length; i++) {
+      if (canFormWordInGrid(wordlist[i])) {
+        validWords.push(wordlist[i]);
+        count++;
+        if (limit > 0 && count >= limit) break;
+      }
+    }
     return validWords;
   }
+
   function countValidWordsInGrid() {
     let validWords = findValidWordsInGrid();
     return validWords.length;
@@ -560,9 +593,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function animateWordConstructionSuccess() {
-    const letters = document.querySelectorAll(
-      ".word-construction .letter-block"
-    );
+    const letters = document.querySelectorAll(".letter-block");
     let delay = 0;
 
     // Animate each letter
@@ -585,6 +616,12 @@ document.addEventListener("DOMContentLoaded", () => {
     setTimeout(() => {
       clearWordConstruction();
     }, delay + 600);
+  }
+
+  function animateWordConstructionFailure() {
+    const wordConstruction = document.querySelector("#word-construction");
+    wordConstruction.classList.add("flash-red");
+    setTimeout(() => wordConstruction.classList.remove("flash-red"), 300); // Duration of flash animation
   }
 
   // modal handling

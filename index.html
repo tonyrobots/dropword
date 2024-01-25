@@ -40,6 +40,9 @@
         <div class="stats-container" id="valid-words-container">
           <div class="stats-label" id="valid-words-label">words in grid</div>
           <div class="stat" id="valid-words">0</div>
+          <div id="missed-words-container">
+            <div id="missed-words"></div>
+          </div>
         </div>
         <div id="timer-container">
           <div id="timer-label" class="stats-label">Time Left</div>
@@ -47,13 +50,17 @@
         </div>
         <div class="stats-container" id="score-container">
           <div class="stats-label" id="score-label">words found</div>
-
           <div class="stat" id="score">0</div>
+          <div id="found-words-container">
+            <div id="found-words"></div>
+          </div>
         </div>
       </div>
 
       <div id="main-area">
         <div id="content-area"></div>
+        <div id="grid"></div>
+
         <div id="word-construction">
           <div id="slot-1" class="letter-block">&nbsp;</div>
           <div id="slot-2" class="letter-block">&nbsp;</div>
@@ -61,14 +68,9 @@
           <div id="slot-4" class="letter-block">&nbsp;</div>
           <div id="slot-5" class="letter-block">&nbsp;</div>
         </div>
-        <div id="grid"></div>
       </div>
-
-      <div id="found-words-container">
-        <div id="found-words"></div>
-      </div>
-      <div id="gameMessage"></div>
       <button id="start-button">Let's Go!</button>
+      <div id="gameMessage"></div>
     </div>
 
     <!-- Modal Structure -->

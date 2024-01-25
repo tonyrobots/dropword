@@ -288,6 +288,7 @@ roots
 paint
 heads
 shook
+shoop
 serve
 angry
 crowd
@@ -2258,6 +2259,7 @@ sneer
 mango
 fiord
 flora
+manga
 roomy
 minks
 thaws
@@ -4799,6 +4801,7 @@ tuans
 belli
 bergs
 anima
+anime
 weirs
 mahua
 scops
@@ -5076,7 +5079,6 @@ bumph
 coyer
 honky
 gamer
-gooky
 waspy
 sedgy
 bents
@@ -5227,6 +5229,7 @@ eruct
 oiler
 vacua
 dreck
+gyoza
 dater
 arums
 tubal
@@ -5244,7 +5247,6 @@ ribby
 clews
 creme
 email
-pyxie
 kulak
 bocci
 rived
@@ -5266,7 +5268,7 @@ hived
 litho
 fisty
 stagy
-luvya
+blerx
 maria
 smogs
 asana
@@ -5315,7 +5317,6 @@ miaow
 gouts
 mynas
 mazer
-kikes
 oxeye
 stoup
 jujus
@@ -5745,7 +5746,7 @@ biggy
 laved
 baldy
 pubis
-gooks
+mooks
 wonky
 stied
 hypos

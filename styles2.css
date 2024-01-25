@@ -44,10 +44,14 @@ h1 {
   }
 }
 
+#main-area {
+  margin-top: 80px;
+}
 #game-container {
   width: 93%;
   max-width: 600px;
   margin-top: 20px;
+  position: relative;
 }
 
 #content-area {
@@ -62,9 +66,13 @@ h1 {
 #top-row {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  align-items: flex-start;
   margin-bottom: 10px;
-  max-height: 75px;
+  /* max-height: 75px; */
 }
 
 /* .grid {
@@ -134,12 +142,17 @@ h1 {
 }
 
 .stats-container {
+  display: flex;
+  flex-direction: column;
   padding: 5px 10px;
   background-color: #ddd;
   border-radius: 5px;
   /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
   text-align: center;
   width: 20%;
+  min-height: 60px; /* Adjust as needed to fit initial content */
+  transition: min-height 0.3s ease; /* Smooth transition for expanding height */
+  z-index: 5;
 }
 
 #score,
@@ -171,17 +184,32 @@ h1 {
   left: 0;
 }
 
-#found-words-container {
-  /* position: relative; */
+/* #found-words-container {
+  position: relative;
   right: 10px;
-  top: 100px; /* Adjust based on the height of the score container */
-  width: 140px; /* Adjust as needed */
+  top: 100px; 
+  width: 140px; 
   overflow-y: auto;
   background-color: #eee;
   border-radius: 5px;
   padding: 5px;
   text-align: left;
-  /* display: none; */
+} */
+
+#missed-words-container,
+#found-words-container {
+  display: none; /* Initially hidden */
+  width: 100%;
+  max-width: 500px; /* Adjust based on your layout */
+  margin: 20px auto;
+  padding: 10px;
+  overflow: hidden; /* Hide overflow content */
+}
+
+#missed-words,
+#found-words {
+  text-align: left;
+  margin-top: 10px;
 }
 
 #gameMessage {
@@ -247,7 +275,17 @@ h1 {
     background-color: #000;
   }
   50% {
-    background-color: green;
+    background-color: rgb(0, 98, 0);
+  }
+}
+
+@keyframes flashRed {
+  0%,
+  100% {
+    background-color: #000;
+  }
+  50% {
+    background-color: rgb(154, 0, 0);
   }
 }
 
