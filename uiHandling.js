@@ -19,13 +19,15 @@ export function displayMessage(message, isError = false) {
   // messageElement.style.transform = "translateX(0)"; // Reset transform
 
   if (isError) {
-    messageElement.style.animation = "shake 1.5s";
+    // messageElement.style.animation = "shake 1.5s";
+    // messageElement.style.backgroundColor = "#9a0000";
+    messageElement.style.animation = "fadeInOut 1s";
   } else {
     messageElement.style.animation = "fadeInOut 3s";
   }
 
   // Adjust the timeout duration based on the animation
-  const timeoutDuration = isError ? 1500 : 3000;
+  const timeoutDuration = isError ? 1000 : 3000;
   setTimeout(() => {
     messageElement.style.display = "none";
     messageElement.style.animation = "none"; // Reset the animation

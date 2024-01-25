@@ -21,6 +21,7 @@ h1 {
   background-color: #eee; /* Example background color */
   max-height: 50px;
   width: 100%;
+  max-width: 800px;
 }
 
 .header-buttons button {
@@ -219,7 +220,6 @@ h1 {
   transform: translate(-50%, -50%);
   background-color: #333; /* Dark background */
   color: #fff; /* Light text */
-  border: 1px solid #444;
   border-radius: 10px;
   padding: 10px 20px;
   text-align: center;
@@ -260,19 +260,54 @@ h1 {
   }
 }
 
+/* @keyframes shake {
+  15%,
+  85% {
+    transform: translateX(0);
+  }
+  25%,
+  63% {
+    transform: translateX(-5px);
+  }
+  37%,
+  75% {
+    transform: translateX(5px);
+  }
+} */
+
+@keyframes shake4 {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-10px);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(10px);
+  }
+}
+
 @keyframes enlarge {
   from {
     transform: scale(1);
   }
   to {
-    transform: scale(1.5);
+    transform: scale(1.75);
   }
 }
 
 @keyframes flashGreen {
   0%,
   100% {
-    background-color: #000;
+    background-color: #333;
   }
   50% {
     background-color: rgb(0, 98, 0);
@@ -282,10 +317,10 @@ h1 {
 @keyframes flashRed {
   0%,
   100% {
-    background-color: #000;
+    background-color: #333;
   }
   50% {
-    background-color: rgb(154, 0, 0);
+    background-color: #9a0000;
   }
 }
 
@@ -297,14 +332,18 @@ h1 {
 
   /* align-items: left; Center items vertically */
   margin-top: 5px;
-  background-color: #000;
+  background-color: #333;
   border-radius: 5px;
   max-width: 460px;
   /* display: none; */
 }
 
-#word-construction.flash-green {
+#word-construction.success {
   animation: flashGreen 0.2s ease 2;
+}
+
+#word-construction.failure {
+  animation: flashRed 0.5s ease 2, shake4 0.2s;
 }
 
 .letter-block {
@@ -324,7 +363,7 @@ h1 {
 }
 
 .letter-block.enlarge {
-  animation: enlarge 0.1s ease forwards;
+  animation: enlarge 0.08s ease forwards;
 }
 
 #timer-container {

@@ -54,6 +54,8 @@ document.addEventListener("DOMContentLoaded", () => {
     timeRemaining = gameTime;
     focusCol = 0;
     completedWords = [];
+    document.getElementById("missed-words-container").style.display = "none";
+    document.getElementById("found-words-container").style.display = "none";
   }
 
   function startGame() {
@@ -122,6 +124,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function pauseGame() {
+    if (gameOver) return;
     clearInterval(timerInterval);
     // hide/show stuff
     // Ui.setVisibilityByClass("grid-cell", false);
@@ -188,7 +191,7 @@ document.addEventListener("DOMContentLoaded", () => {
         missedWordsList.innerHTML += `<div>${word}</div>`;
       });
       if (validWordsCount > 10) {
-        missedWordsList.innerHTML += `<div>...and ${
+        missedWordsList.innerHTML += `<div>and ${
           validWordsCount - 10
         } more</div>`;
       }
@@ -405,12 +408,7 @@ document.addEventListener("DOMContentLoaded", () => {
       updateGrid(); // This will eventually clear the selection
     } else {
       Ui.displayMessage("nope", true);
-      animateWordConstructionFailure();
-      // give time for animation to finish
-      setTimeout(() => {
-        clearSelection(); // Clear the selection immediately for invalid word
-        clearWordConstruction(); // clear the staging area
-      }, 300);
+      animateWordConstructionFailure(); // this will also clear the selection/construction area
     }
   }
 
@@ -608,9 +606,9 @@ document.addEventListener("DOMContentLoaded", () => {
     // Flash the background after all letters have been animated
     setTimeout(() => {
       const wordConstruction = document.querySelector("#word-construction");
-      wordConstruction.classList.add("flash-green");
-      setTimeout(() => wordConstruction.classList.remove("flash-green"), 600); // Duration of flash animation
-    }, delay);
+      wordConstruction.classList.add("success");
+      setTimeout(() => wordConstruction.classList.remove("success"), 600); // Duration of flash animation
+    }, delay - 300);
 
     // After all animations, clear the word (if applicable)
     setTimeout(() => {
@@ -620,9 +618,36 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function animateWordConstructionFailure() {
     const wordConstruction = document.querySelector("#word-construction");
-    wordConstruction.classList.add("flash-red");
-    setTimeout(() => wordConstruction.classList.remove("flash-red"), 300); // Duration of flash animation
+    wordConstruction.classList.add("failure");
+    setTimeout(() => wordConstruction.classList.remove("failure"), 500); // Duration of flash animation
+
+    // After all animations, clear the word (if applicable)
+    setTimeout(() => {
+      clearWordConstruction();
+      clearSelection();
+    }, 500);
   }
+
+  // function animateWordConstructionFailure() {
+  //   const wordConstruction = document.querySelector("#word-construction");
+  //   wordConstruction.classList.add("flash-red");
+
+  //   // Add shake effect to each letter
+  //   const letters = document.querySelectorAll(".letter-block");
+  //   letters.forEach((letter) => {
+  //     letter.classList.add("shake");
+  //     setTimeout(() => {
+  //       letter.classList.remove("shake");
+  //       wordConstruction.classList.remove("flash-red");
+  //     }, 500); // Duration of shake animation
+  //   });
+
+  //   // Clear the word construction area after the animation
+  //   setTimeout(() => {
+  //     clearWordConstruction();
+  //     clearSelection();
+  //   }, 500); // Adjust timing as necessary
+  // }
 
   // modal handling
 
@@ -630,7 +655,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("helpButton").addEventListener("click", () => {
     // Code to show help modal
     document.getElementById("helpModal").style.display = "block";
-    pauseGame();
+    if (!gameOver) pauseGame();
   });
 
   // close buttons
