@@ -111,7 +111,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // start timer
 
     timerInterval = setInterval(() => {
-      if (timeRemaining < 0) {
+      if (timeRemaining === 0) {
         endGame();
         return;
       }
@@ -163,6 +163,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function endGame(message = "Time's up!") {
+    gameOver = true;
     clearInterval(timerInterval);
     const timerElement = document.getElementById("timer");
     timerElement.textContent = "💀";
@@ -170,7 +171,6 @@ document.addEventListener("DOMContentLoaded", () => {
     clearWordConstruction();
     clearSelection();
 
-    gameOver = true;
     timeRemaining = 0;
     if (completedWords.length > 15) {
       Ui.triggerConfetti();
@@ -341,7 +341,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Select the new cell
     toggleCellSelection(rowIndex, colIndex, true);
-    animateLetterToWord(rowIndex, colIndex, letter);
+    // animateLetterToWord(rowIndex, colIndex, letter);
+    addLetterToWordConstruction(colIndex, letter);
+
     // move focus to selected column + 1
     focusCol = (colIndex + 1) % wordLength;
 
@@ -366,13 +368,17 @@ document.addEventListener("DOMContentLoaded", () => {
       if (matchingWord) {
         // Replace the wildcard with the correct letter
         word = matchingWord;
+        // replace word in word construction with correct word
+        for (let i = 0; i < word.length; i++) {
+          addLetterToWordConstruction(i, word[i]);
+        }
       }
     }
     if (wordlist.includes(word)) {
       completedWords.push(word);
       addTime(timeAddedPerWord);
-      updateGrid(); // This will eventually clear the selection
       animateWordConstructionSuccess();
+      updateGrid(); // This will eventually clear the selection
     } else {
       Ui.displayMessage("nope", true);
       clearSelection(); // Clear the selection immediately for invalid word
@@ -449,7 +455,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function updateGrid() {
     let disappearingRowIndices = [];
-    // Step 1: Apply disappearing animation
+    // Step 1: Apply disappearing animation to selected cells
     currentSelection.forEach((sel) => {
       const cellDiv = getCellDiv(sel.rowIndex, sel.colIndex);
       cellDiv.classList.add("disappearing");
@@ -532,53 +538,19 @@ document.addEventListener("DOMContentLoaded", () => {
       })`
     );
   }
-  function animateLetterToWord(rowIndex, colIndex, letter) {
-    const letterDiv = getCellDiv(rowIndex, colIndex);
+
+  function addLetterToWordConstruction(colIndex, letter) {
     const wordConstructionDiv = document.getElementById("word-construction");
     const wordConstructionSlot = document.getElementById(
       `slot-${colIndex + 1}`
     );
-
-    // Clone the letter div to animate it
-    const clone = letterDiv.cloneNode(true);
-    clone.classList.add("moving-letter");
-
-    // Position the clone at the same position as the original letterDiv
-    const rect = letterDiv.getBoundingClientRect();
-    clone.style.position = "fixed";
-    clone.style.left = `${rect.left}px`;
-    clone.style.top = `${rect.top}px`;
-    clone.style.margin = "0"; // Remove margin as it's now absolutely positioned
-
-    // Append clone to body to allow free movement
-    document.body.appendChild(clone);
-
-    // Calculate the end position for the animation
-    const targetRect = wordConstructionDiv.getBoundingClientRect();
-    const transformX = targetRect.left - rect.left;
-    const transformY = targetRect.top - rect.top + window.scrollY; // Include scroll offset
-
-    // Start the animation
-    requestAnimationFrame(() => {
-      clone.style.transform = `translate(${transformX}px, ${transformY}px)`;
-      clone.style.opacity = "0"; // Fade out the clone
-
-      // After the animation completes, add the letter to the word construction area
-      setTimeout(() => {
-        // wordConstructionDiv.appendChild(createLetterBlock(letter)); // Add the letter block to the container
-        // add the letter block to the correct slot
-        // wordConstructionSlot.appendChild(createLetterBlock(letter));
-        wordConstructionSlot.innerHTML = letter;
-        wordConstructionSlot.classList.remove("disappearing");
-        clone.remove(); // Remove the animated clone
-      }, 200); // This timeout should match the transition duration
-    });
+    wordConstructionSlot.innerHTML = letter;
   }
 
   function removeLetterBlock(col) {
     const wordConstructionSlot = document.getElementById(`slot-${col + 1}`);
+    // wordConstructionSlot.classList.add("disappearing");
     wordConstructionSlot.innerHTML = "";
-    wordConstructionSlot.classList.add("disappearing");
   }
 
   function clearWordConstruction() {

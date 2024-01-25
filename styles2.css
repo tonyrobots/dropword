@@ -172,7 +172,7 @@ h1 {
 }
 
 #found-words-container {
-  position: relative;
+  /* position: relative; */
   right: 10px;
   top: 100px; /* Adjust based on the height of the score container */
   width: 140px; /* Adjust as needed */
@@ -181,7 +181,7 @@ h1 {
   border-radius: 5px;
   padding: 5px;
   text-align: left;
-  display: none;
+  /* display: none; */
 }
 
 #gameMessage {
@@ -266,7 +266,7 @@ h1 {
 }
 
 #word-construction.flash-green {
-  animation: flashGreen 0.3s ease 2;
+  animation: flashGreen 0.2s ease 2;
 }
 
 .letter-block {
@@ -287,12 +287,6 @@ h1 {
 
 .letter-block.enlarge {
   animation: enlarge 0.1s ease forwards;
-}
-
-.moving-letter {
-  transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
-  position: absolute; /* Position the letters absolutely to move them */
-  opacity: 0; /* Letters start out invisible */
 }
 
 #timer-container {
