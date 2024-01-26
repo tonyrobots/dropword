@@ -2,7 +2,7 @@ import * as Ui from "./uiHandling.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   // globals
-  const gameName = "Tumbleword";
+  const gameName = "Tumblewords";
   const visibleRows = 5; // Number of rows visible on the screen
   const wordLength = 5;
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -57,6 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
     completedWords = [];
     document.getElementById("missed-words-container").style.display = "none";
     document.getElementById("found-words-container").style.display = "none";
+    document.getElementById("missed-words").innerHTML = "";
   }
 
   function startGame() {
@@ -65,7 +66,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const selectedWords = chooseWords(wordlist, visibleRows);
     grid = generateGrid(selectedWords);
     renderGrid(grid);
-    console.log(selectedWords);
     // hide start button
     startButton.style.display = "none";
     gridElement.style.opacity = 1;
@@ -220,6 +220,9 @@ document.addEventListener("DOMContentLoaded", () => {
       game_name: gameName,
     });
 
+    // save stats
+    updateStats(completedWords.length);
+
     // show start button after 3 seconds
     setTimeout(() => {
       startButton.style.display = "block";
@@ -235,8 +238,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function renderGrid(grid) {
-    console.log("rows in grid:", grid.length);
-
     const gridContainer = document.getElementById("grid");
 
     gridContainer.innerHTML = ""; // Clear previous grid
@@ -258,9 +259,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
       gridContainer.appendChild(rowDiv);
     });
-    // console.log("Number of valid words in the grid:", countValidWordsInGrid());
-    console.log("Valid words in the grid:", findValidWordsInGrid());
-    // console.log(grid);
+    // console.log("Valid words in the grid:", findValidWordsInGrid());
   }
 
   function chooseWords(wordlist, count) {
@@ -304,7 +303,6 @@ document.addEventListener("DOMContentLoaded", () => {
   function addRowsToFillerGrid(numRows) {
     const newRows = generateGrid(chooseWords(wordlist, numRows));
     fillerGrid = fillerGrid.concat(newRows);
-    console.log("added rows to filler grid:", newRows.length);
   }
 
   function shuffleArray(array) {
@@ -402,7 +400,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function validateWord(word) {
-    console.log("Validating word:", word);
+    // console.log("Validating word:", word);
     // Check if the word contains a wildcard
     if (word.includes(wcChar)) {
       // Find the first word in the wordlist that matches the pattern
@@ -643,27 +641,34 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 500);
   }
 
-  // function animateWordConstructionFailure() {
-  //   const wordConstruction = document.querySelector("#word-construction");
-  //   wordConstruction.classList.add("flash-red");
+  function updateStats(score) {
+    const statsName = gameName + "-stats";
+    const now = new Date();
+    // Retrieve existing stats or initialize if not present
+    let stats = JSON.parse(localStorage.getItem(statsName)) || {
+      gamesPlayed: 0,
+      averageScore: 0,
+      topScore: 0,
+      // currentStreak: 0, // not currently supported
+      // longestStreak: 0,
+      topScoreDate: now.getTime(),
+      playerSince: now.getTime(), // Only set this once -- NOTE this is UTC! convert to local time before displaying
+    };
 
-  //   // Add shake effect to each letter
-  //   const letters = document.querySelectorAll(".letter-block");
-  //   letters.forEach((letter) => {
-  //     letter.classList.add("shake");
-  //     setTimeout(() => {
-  //       letter.classList.remove("shake");
-  //       wordConstruction.classList.remove("flash-red");
-  //     }, 500); // Duration of shake animation
-  //   });
+    // Update stats
+    stats.averageScore =
+      (stats.averageScore * stats.gamesPlayed + score) /
+      (stats.gamesPlayed + 1);
+    stats.gamesPlayed++;
+    // check for new top score
+    if (score > stats.topScore) {
+      stats.topScore = score;
+      stats.topScoreDate = now.getTime();
+    }
 
-  //   // Clear the word construction area after the animation
-  //   setTimeout(() => {
-  //     clearWordConstruction();
-  //     clearSelection();
-  //   }, 500); // Adjust timing as necessary
-  // }
-
+    // write to localStorage
+    localStorage.setItem(statsName, JSON.stringify(stats));
+  }
   // modal handling
 
   // help button
