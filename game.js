@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const visibleRows = 5; // Number of rows visible on the screen
   const wordLength = 5;
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  const gameTime = 12; // game length in seconds
+  const gameTime = 120; // game length in seconds
   const timeAddedPerWord = 10; // seconds added to the timer per word found
   const wcChar = "⭐️"; // wildcard character
 
