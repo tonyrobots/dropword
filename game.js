@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
   loadWordList("sgb-words").then((words) => {
     wordlist = words;
     // show start button
-    startButton.textContent = "Let's Go!";
+    startButton.textContent = "Let's Tumble!";
     startButton.style.display = "block";
   });
 

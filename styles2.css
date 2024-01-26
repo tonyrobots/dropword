@@ -421,8 +421,8 @@ h3 {
   cursor: pointer;
   background-color: #068b0d;
   color: #ffffff;
-  border: solid 5px #fff;
-  border-radius: 5px;
+  border: solid 1px #fff;
+  border-radius: 10px;
   font-weight: 700;
   text-transform: uppercase;
   transition: background-color 0.3s;
