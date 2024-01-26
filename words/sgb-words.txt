@@ -1845,6 +1845,8 @@ fussy
 annoy
 shank
 gouge
+bleep
+bloop
 bleed
 elves
 roped
@@ -2322,6 +2324,7 @@ knits
 dumpy
 mania
 spits
+blogs
 firth
 hikes
 trots
@@ -3940,9 +3943,7 @@ lumen
 chump
 nanny
 trump
-fichu
 chomp
-homos
 purty
 maser
 woosh
@@ -4710,7 +4711,6 @@ blowy
 wahoo
 lubra
 mecum
-whooo
 coqui
 sabra
 edema
@@ -5528,7 +5528,6 @@ unmap
 folia
 rawly
 snark
-topoi
 ceils
 immix
 yores
@@ -5537,7 +5536,6 @@ bubba
 pomps
 forky
 turdy
-lawzy
 poohs
 worts
 gloms

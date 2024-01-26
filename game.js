@@ -17,6 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const playAgainButton = document.getElementById("play-again-button");
   const gridElement = document.getElementById("grid");
   const contentArea = document.getElementById("content-area");
+  const endMessageElement = document.getElementById("end-message");
   const wordConstructionDiv = document.getElementById("word-construction");
 
   let grid = [];
@@ -61,15 +62,19 @@ document.addEventListener("DOMContentLoaded", () => {
     focusCol = 0;
     completedWords = [];
     newHighScore = false;
-    document.getElementById("missed-words-container").style.display = "none";
-    document.getElementById("found-words-container").style.display = "none";
+    // document.getElementById("missed-words-container").style.display = "none";
+    // document.getElementById("found-words-container").style.display = "none";
     document.getElementById("missed-words").innerHTML = "";
   }
 
   function startGame() {
     gameOver = false;
 
+    // hide end game screen
+    contentArea.style.display = "none";
+
     const selectedWords = chooseWords(wordlist, visibleRows);
+    // console.log("Selected words:", selectedWords);
     grid = generateGrid(selectedWords);
     renderGrid(grid);
     // hide start button
@@ -107,7 +112,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function startTimer() {
-    // show grid and wordconstruction again, hide content area
+    // show grid and wordconstruction again
     // Ui.setVisibilityByClass("grid-cell", true, "flex");
     gridElement.style.visibility = "visible";
     wordConstructionDiv.style.visibility = "visible ";
@@ -121,11 +126,10 @@ document.addEventListener("DOMContentLoaded", () => {
       .getElementById("timer-container")
       .addEventListener("click", pauseGame);
 
-    // hide content area
-    contentArea.style.display = "none";
+    // hide pause message
+    document.getElementById("pause-message").style.display = "none";
 
     // start timer
-
     timerInterval = setInterval(() => {
       if (timeRemaining === 0) {
         endGame();
@@ -144,9 +148,12 @@ document.addEventListener("DOMContentLoaded", () => {
     // Ui.setVisibilityByClass("grid-cell", false);
     gridElement.style.visibility = "hidden";
     wordConstructionDiv.style.visibility = "hidden";
-    contentArea.style.display = "flex";
+    // contentArea.style.display = "flex";
+    // set pause-message div to visible
+    document.getElementById("pause-message").style.display = "block";
 
-    contentArea.textContent = "Game Paused. Press timer to resume.";
+    endMessageElement.innerHTML =
+      "<h2>Game Paused. Press timer to resume.</h2>";
     // Ui.displayMessage("Game paused, press timer again to resume.");
 
     // remove event listener for pause
@@ -226,12 +233,6 @@ document.addEventListener("DOMContentLoaded", () => {
     updateStats(completedWords.length);
 
     showEndGameScreen();
-
-    // show start button after 3 seconds
-    // setTimeout(() => {
-    //   startButton.style.display = "block";
-    //   startButton.textContent = "One more time!";
-    // }, 3000);
   }
 
   function showEndGameScreen() {
@@ -249,7 +250,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.getElementById("missed-words-container").style.display = "block";
     document.getElementById("found-words-container").style.display = "block";
-    const endMessageElement = document.getElementById("end-message");
 
     endMessageElement.innerHTML = `<h3>You found ${score} ${
       score === 1 ? "word" : "words"
@@ -687,7 +687,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function updateStats(score) {
     const statsName = gameName + "-stats";
     const now = new Date();
-    // Retrieve existing stats or initialize if not present
+    // 1. Retrieve existing stats or initialize if not present
     let stats = JSON.parse(localStorage.getItem(statsName)) || {
       gamesPlayed: 0,
       averageScore: 0,
@@ -698,7 +698,7 @@ document.addEventListener("DOMContentLoaded", () => {
       playerSince: now.getTime(), // Only set this once -- NOTE this is UTC! convert to local time before displaying
     };
 
-    // Update stats
+    // 2. Update stats
     stats.averageScore =
       (stats.averageScore * stats.gamesPlayed + score) /
       (stats.gamesPlayed + 1);
@@ -710,14 +710,14 @@ document.addEventListener("DOMContentLoaded", () => {
       newHighScore = true;
     }
 
-    // write to localStorage
+    // 3. write to localStorage
     localStorage.setItem(statsName, JSON.stringify(stats));
     // populate stats HTML
     populateStatsHTML(stats);
   }
 
   function populateStatsHTML(stats) {
-    // Update simple stats
+    // Ui.setVisibilityByClass("label", true, "block");
     document.getElementById("gamesPlayed").textContent = stats.gamesPlayed;
     document.getElementById("avgScore").textContent =
       stats.averageScore.toFixed(1);

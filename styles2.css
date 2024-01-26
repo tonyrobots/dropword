@@ -68,6 +68,18 @@ h3 {
   justify-content: center;
   margin: auto;
   max-width: 600px;
+  line-height: -20%;
+}
+
+#pause-message {
+  margin: 20% auto;
+  text-align: center;
+  display: none;
+}
+
+#end-message {
+  margin: auto;
+  text-align: center;
 }
 
 #top-row {
@@ -212,6 +224,7 @@ h3 {
 .label {
   font-size: 0.85em;
 }
+
 @media (max-width: 600px) {
   .stats-grid {
     grid-template-columns: repeat(2, 1fr); /* 2 columns for small screens */
@@ -430,6 +443,7 @@ h3 {
 
 .button.play {
   padding: 10px 20px;
+  margin: 25px 0px;
   font-size: 1.2em;
   cursor: pointer;
   background-color: #068b0d;
