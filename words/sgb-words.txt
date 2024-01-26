@@ -3983,6 +3983,7 @@ chary
 spoof
 phyla
 clime
+boing
 babel
 wacky
 sumps
@@ -5139,7 +5140,7 @@ rimes
 gimpy
 guano
 liras
-kapok
+swole
 scuds
 bwana
 oring
@@ -5465,7 +5466,6 @@ nitty
 techy
 lieth
 somas
-darky
 villi
 gluon
 janes

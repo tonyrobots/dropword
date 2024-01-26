@@ -57,28 +57,57 @@
 
     <div id="game-container">
       <div id="top-row">
-        <div class="stats-container" id="valid-words-container">
-          <div class="stats-label" id="valid-words-label">words in grid</div>
-          <div class="stat" id="valid-words">0</div>
-          <div id="missed-words-container">
-            <div id="missed-words"></div>
-          </div>
+        <div class="stats-container" id="score-container">
+          <div class="main-stats-label" id="score-label">words found</div>
+          <div class="main-stat" id="score">0</div>
         </div>
         <div id="timer-container">
-          <div id="timer-label" class="stats-label">Time Left</div>
+          <div id="timer-label" class="main-stats-label">Time Left</div>
           <div id="timer">2:00</div>
         </div>
-        <div class="stats-container" id="score-container">
-          <div class="stats-label" id="score-label">words found</div>
-          <div class="stat" id="score">0</div>
-          <div id="found-words-container">
-            <div id="found-words"></div>
+
+        <div class="stats-container" id="valid-words-container">
+          <div class="main-stats-label" id="valid-words-label">
+            words in grid
           </div>
+          <div class="main-stat" id="valid-words">0</div>
         </div>
       </div>
 
       <div id="main-area">
-        <div id="content-area"></div>
+        <div id="content-area">
+          <div id="end-message"></div>
+
+          <!-- <h3 id="statsHeader">Statistics</h3> -->
+          <div class="stats-grid">
+            <div class="stat" id="playedStat">
+              <div class="label">Played</div>
+              <div class="number" id="gamesPlayed"></div>
+            </div>
+            <div class="stat" id="scoreStat">
+              <div class="label">Avg. Score</div>
+              <div class="number" id="avgScore"></div>
+            </div>
+            <div class="stat" id="topScoreStat">
+              <div class="label">Top Score</div>
+              <div class="number" id="topScore"></div>
+            </div>
+          </div>
+          <button id="play-again-button" class="button play">
+            One More Time!
+          </button>
+
+          <div class="flex-column-container">
+            <div id="found-words-container">
+              <h3>Found words:</h3>
+              <div id="found-words"></div>
+            </div>
+            <div id="missed-words-container">
+              <h3>Words you missed at the end:</h3>
+              <div id="missed-words"></div>
+            </div>
+          </div>
+        </div>
         <div id="grid"></div>
 
         <div id="word-construction">
@@ -89,7 +118,7 @@
           <div id="slot-5" class="letter-block">&nbsp;</div>
         </div>
       </div>
-      <button id="start-button">Let's Go!</button>
+      <button id="start-button" class="play button">Let's Go!</button>
       <div id="gameMessage"></div>
     </div>
 
@@ -104,16 +133,14 @@
             SHARE RESULT
             <i class="fa-solid fa-share-nodes"></i>
           </button>
-          <button id="playAgainButton" class="button play-again-button">
-            Play Again
-          </button>
+          <button id="playAgainButton" class="button play">Play Again</button>
         </div>
       </div>
     </div>
     <div id="helpModal" class="modal">
       <div class="modal-content">
         <button class="close-modal-button"><i class="fa fa-close"></i></button>
-        <h2>Welcome to Dropword!</h2>
+        <h2>Welcome to Tumblewords!</h2>
         <p>
           The goal is to build 5-letter words from left to right, choosing one
           letter from each column.
@@ -154,7 +181,7 @@
           10 seconds to the timer. If you need a breather, tap or click the
           timer during a game to pause.
         </p>
-        <p>Happy Dropwording!</p>
+        <p>Let's get ready to TUMBLE!</p>
       </div>
     </div>
 

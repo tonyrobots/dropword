@@ -6,13 +6,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const visibleRows = 5; // Number of rows visible on the screen
   const wordLength = 5;
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  const gameTime = 120; // game length in seconds
+  const gameTime = 12; // game length in seconds
   const timeAddedPerWord = 10; // seconds added to the timer per word found
   const wcChar = "⭐️"; // wildcard character
 
   // dom objects
   const helpModal = document.getElementById("helpModal");
   const startButton = document.getElementById("start-button");
+  const playAgainButton = document.getElementById("play-again-button");
   const gridElement = document.getElementById("grid");
   const contentArea = document.getElementById("content-area");
   const wordConstructionDiv = document.getElementById("word-construction");
@@ -26,8 +27,11 @@ document.addEventListener("DOMContentLoaded", () => {
   let timeRemaining = gameTime;
   let timerInterval;
   let gameOver = true;
+  let newHighScore = false;
 
   startButton.addEventListener("click", startGame);
+  playAgainButton.addEventListener("click", startGame);
+
   // add keyboard support for letter selection
   document.addEventListener("keydown", (event) => {
     handleKeydown(event);
@@ -55,6 +59,7 @@ document.addEventListener("DOMContentLoaded", () => {
     timeRemaining = gameTime;
     focusCol = 0;
     completedWords = [];
+    newHighScore = false;
     document.getElementById("missed-words-container").style.display = "none";
     document.getElementById("found-words-container").style.display = "none";
     document.getElementById("missed-words").innerHTML = "";
@@ -182,34 +187,29 @@ document.addEventListener("DOMContentLoaded", () => {
     clearSelection();
 
     timeRemaining = 0;
-    if (completedWords.length > 15) {
-      Ui.triggerConfetti();
-    }
-    Ui.displayMessage(
-      message + " You found " + completedWords.length + " words."
-    );
+    // if (completedWords.length > 15) {
+    //   Ui.triggerConfetti();
+    // }
+    Ui.displayMessage(message);
 
     // Populate missed words
     let validWordsCount = countValidWordsInGrid();
+    const missedWordDisplayCount = 5;
     if (validWordsCount > 0) {
-      const missedWords = findValidWordsInGrid(10); // Implement this function to get missed words
+      const missedWords = findValidWordsInGrid(missedWordDisplayCount);
       const missedWordsList = document.getElementById("missed-words");
       missedWords.forEach((word) => {
         missedWordsList.innerHTML += `<div>${word}</div>`;
       });
-      if (validWordsCount > 10) {
+      if (validWordsCount > missedWordDisplayCount) {
         missedWordsList.innerHTML += `<div>and ${
-          validWordsCount - 10
+          validWordsCount - missedWordDisplayCount
         } more</div>`;
       }
     }
-    document.getElementById("found-words-container").style.display = "block";
-    document.getElementById("missed-words-container").style.display = "block";
+
     // hide grid and wordconstruction -- there should be a nicer way to handle this
-    // make grid 30% opacity
-    gridElement.style.opacity = 0.3;
-    // gridElement.style.visibility = "hidden";
-    // contentArea.style.visibility = "visible";
+    gridElement.style.visibility = "hidden";
     wordConstructionDiv.style.visibility = "hidden";
 
     // event tracking
@@ -223,11 +223,51 @@ document.addEventListener("DOMContentLoaded", () => {
     // save stats
     updateStats(completedWords.length);
 
+    showEndGameScreen();
+
     // show start button after 3 seconds
-    setTimeout(() => {
-      startButton.style.display = "block";
-      startButton.textContent = "One more time!";
-    }, 3000);
+    // setTimeout(() => {
+    //   startButton.style.display = "block";
+    //   startButton.textContent = "One more time!";
+    // }, 3000);
+  }
+
+  function showEndGameScreen() {
+    // show end game screen
+    const score = completedWords.length;
+    contentArea.style.display = "flex";
+
+    if (newHighScore) {
+      Ui.triggerConfetti();
+    }
+    // if player found no words, add a grimace emoji to their found-words list
+    if (score === 0) {
+      document.getElementById("found-words").innerHTML = "😬";
+    }
+
+    document.getElementById("missed-words-container").style.display = "block";
+    document.getElementById("found-words-container").style.display = "block";
+    const endMessageElement = document.getElementById("end-message");
+
+    endMessageElement.innerHTML = `<h3>You found ${score} ${
+      score === 1 ? "word" : "words"
+    }. `;
+    if (newHighScore) {
+      endMessageElement.innerHTML += "Wow! That's a new personal best!";
+    } else if (score < 6) {
+      endMessageElement.innerHTML += "Don't quit your day job!";
+    } else if (score < 11) {
+      endMessageElement.innerHTML += "Not bad!";
+    } else if (score < 16) {
+      endMessageElement.innerHTML += "Fine Tumblewording, indeed!";
+    } else if (score < 25) {
+      endMessageElement.innerHTML += "You're a Tumblewording machine!";
+    } else if (score < 40) {
+      endMessageElement.innerHTML += "You're a Tumblewording master!";
+    } else {
+      endMessageElement.innerHTML += "Behold the Tumblelord!";
+    }
+    endMessageElement.innerHTML += "</h3>";
   }
 
   function loadWordList(filename) {
@@ -565,7 +605,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function resetCellClasses() {
-    document.querySelectorAll(".grid-cell").forEach((cell) => {
+    gridElement.querySelectorAll(".grid-cell").forEach((cell) => {
+      //was document, trying gridElement to keep help modal from being affected
       cell.classList.remove(
         "selected",
         "falling",
@@ -664,11 +705,23 @@ document.addEventListener("DOMContentLoaded", () => {
     if (score > stats.topScore) {
       stats.topScore = score;
       stats.topScoreDate = now.getTime();
+      newHighScore = true;
     }
 
     // write to localStorage
     localStorage.setItem(statsName, JSON.stringify(stats));
+    // populate stats HTML
+    populateStatsHTML(stats);
   }
+
+  function populateStatsHTML(stats) {
+    // Update simple stats
+    document.getElementById("gamesPlayed").textContent = stats.gamesPlayed;
+    document.getElementById("avgScore").textContent =
+      stats.averageScore.toFixed(1);
+    document.getElementById("topScore").textContent = stats.topScore;
+  }
+
   // modal handling
 
   // help button

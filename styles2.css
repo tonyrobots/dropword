@@ -13,6 +13,12 @@ h1 {
   font-size: 1.5em;
 }
 
+h3 {
+  font-size: 1.2em;
+  margin-bottom: -5px;
+  line-height: 1.2em;
+}
+
 .game-header {
   display: flex;
   justify-content: space-between;
@@ -56,7 +62,7 @@ h1 {
 }
 
 #content-area {
-  display: flex;
+  display: none;
   flex-direction: column;
   align-items: center;
   justify-content: center;
@@ -163,16 +169,43 @@ h1 {
   text-align: center;
 }
 
-.stats-label {
+.main-stats-label {
   font-size: 0.75em;
   line-height: 92%;
   text-transform: uppercase;
 }
 
-.stat {
+.main-stat {
   font-size: 2em;
   font-weight: bold;
   margin-top: 0px;
+}
+
+/* stats */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 columns for larger screens */
+  gap: 10px;
+}
+
+.stat {
+  /* margin: 10px 0; */
+  /* center; */
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center horizontally */
+  justify-content: center; /* Center vertically */
+  height: 100%; /* Give it a height to allow for vertical centering */
+}
+
+.number {
+  font-size: 2em;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.label {
+  font-size: 0.85em;
 }
 
 #score-container {
@@ -185,32 +218,23 @@ h1 {
   left: 0;
 }
 
-/* #found-words-container {
-  position: relative;
-  right: 10px;
-  top: 100px; 
-  width: 140px; 
-  overflow-y: auto;
-  background-color: #eee;
-  border-radius: 5px;
-  padding: 5px;
-  text-align: left;
-} */
+.flex-column-container {
+  display: flex;
+  flex-wrap: wrap; /* Allows items to wrap onto the next line */
+}
 
 #missed-words-container,
 #found-words-container {
-  display: none; /* Initially hidden */
   width: 100%;
   max-width: 500px; /* Adjust based on your layout */
-  margin: 20px auto;
-  padding: 10px;
-  overflow: hidden; /* Hide overflow content */
+  /* margin: 20px auto; */
+  flex: 1;
+  min-width: 150px;
 }
 
 #missed-words,
 #found-words {
   text-align: left;
-  margin-top: 10px;
 }
 
 #gameMessage {
@@ -391,12 +415,7 @@ h1 {
   color: #fff;
 }
 
-#start-button {
-  position: absolute;
-  transform: translate(-50%, -50%);
-  top: 35%;
-  left: 50%;
-
+.button.play {
   padding: 10px 20px;
   font-size: 1.2em;
   cursor: pointer;
@@ -407,10 +426,16 @@ h1 {
   font-weight: 700;
   text-transform: uppercase;
   transition: background-color 0.3s;
-  display: none;
 }
 
-#start-button:hover {
+#start-button {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  top: 35%;
+  left: 50%;
+}
+
+.button.play:hover {
   background-color: #10993b;
 }
 
