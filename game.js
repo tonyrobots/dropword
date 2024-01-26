@@ -2,6 +2,7 @@ import * as Ui from "./uiHandling.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   // globals
+  const gameName = "Tumbleword";
   const visibleRows = 5; // Number of rows visible on the screen
   const wordLength = 5;
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -68,6 +69,12 @@ document.addEventListener("DOMContentLoaded", () => {
     // hide start button
     startButton.style.display = "none";
     gridElement.style.opacity = 1;
+    // tag game start event
+    gtag("event", "game_start", {
+      event_category: "Game",
+      event_label: "Start",
+      game_name: gameName,
+    });
 
     initializeGame();
     startTimer();
@@ -204,6 +211,14 @@ document.addEventListener("DOMContentLoaded", () => {
     // gridElement.style.visibility = "hidden";
     // contentArea.style.visibility = "visible";
     wordConstructionDiv.style.visibility = "hidden";
+
+    // event tracking
+    gtag("event", "game_end", {
+      event_category: "Game",
+      event_label: "End",
+      score: completedWords.length,
+      game_name: gameName,
+    });
 
     // show start button after 3 seconds
     setTimeout(() => {
@@ -613,7 +628,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // After all animations, clear the word (if applicable)
     setTimeout(() => {
       clearWordConstruction();
-    }, delay + 600);
+    }, delay + 100);
   }
 
   function animateWordConstructionFailure() {
