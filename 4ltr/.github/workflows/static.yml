@@ -1,0 +1,36 @@
+name: Deploy 4-Letter Variant to Main Branch
+
+on:
+  push:
+    branches:
+      - 4ltr
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the 4ltr branch
+        uses: actions/checkout@v2
+        with:
+          ref: "4ltr"
+
+      - name: Check out the main branch
+        uses: actions/checkout@v2
+        with:
+          ref: "main"
+          path: "main-branch"
+
+      - name: Copy 4ltr content to the subdirectory
+        run: |
+          mkdir -p main-branch/4ltr
+          rsync -av --exclude='.git/' --exclude='main-branch/' ./ main-branch/4ltr/
+
+      - name: Commit and push changes
+        run: |
+          cd main-branch
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add .
+          git commit -m "Update 4ltr variant"
+          git push origin main

@@ -1,0 +1,111 @@
+body {
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  background-color: #f0f0f0;
+}
+
+#game-container {
+  padding: 20px;
+  max-width: 500px;
+  margin: auto;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(5, 100px);
+  grid-template-rows: repeat(6, 100px);
+  gap: 20px;
+}
+
+.grid-row {
+  display: flex;
+}
+
+.grid-cell {
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 40px;
+  font-weight: bold;
+  color: #333;
+  width: 80px;
+  height: 80px;
+  cursor: pointer;
+  user-select: none; /* Prevents text selection */
+  transition: transform 0.5s ease, opacity 0.5s ease; /* Smooth transition for movement and fading */
+}
+
+.grid-cell.selected {
+  border: 6px solid #007bff; /* Blue border for selected cells */
+  background-color: #e7f1ff; /* Lighter background for selected cells */
+  color: #007bff;
+  box-sizing: border-box; /* Include padding and border in the element's total width and height */
+}
+.grid-cell.falling {
+  transform: translateY(
+    80px
+  ); /* Adjust the value to match the height of your cells */
+}
+
+.grid-cell.disappearing {
+  opacity: 0; /* Fade out the cell */
+}
+
+/* Styles for stats and words */
+#stats-container,
+#found-words-container {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  max-width: 200px;
+}
+
+#score,
+#valid-words,
+#found-words {
+  background-color: #eee; /* Light grey background for visibility */
+  border-radius: 5px;
+  padding: 10px;
+  margin: 5px;
+  width: 45%; /* Slightly less than half the container width */
+  min-width: 150px; /* Minimum width */
+  text-align: center;
+}
+
+#score {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+#valid-words,
+#found-words {
+  font-size: 18px;
+}
+
+#found-words-container {
+  max-height: 200px; /* Set a maximum height */
+  overflow-y: auto; /* Enable scroll for longer lists */
+}
+
+/* Responsive styling for smaller screens */
+@media screen and (max-width: 600px) {
+  #score,
+  #valid-words,
+  #found-words {
+    width: 90%; /* Full width on smaller screens */
+  }
+
+  #stats-container,
+  #found-words-container {
+    flex-direction: column; /* Stack items vertically on small screens */
+  }
+}
