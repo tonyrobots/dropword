@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // globals
   const gameName = "Tumblewords";
   const visibleRows = 5; // Number of rows visible on the screen
-  const wordLength = 5;
+  const wordLength = 4;
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   const gameTime = 120; // game length in seconds
   const timeAddedPerWord = 10; // seconds added to the timer per word found
@@ -39,7 +39,8 @@ document.addEventListener("DOMContentLoaded", () => {
     handleKeydown(event);
   });
 
-  loadWordList("sgb-words").then((words) => {
+  loadWordList("words_4").then((words) => {
+    // loadWordList("sgb-words").then((words) => {
     wordlist = words;
     // show start button
     startButton.textContent = "Let's Tumble!";
@@ -316,12 +317,14 @@ document.addEventListener("DOMContentLoaded", () => {
   function generateGrid(words, empty = false) {
     // Determine the number of rows based on the number of words
     let numRows = words.length;
-    let grid = Array.from({ length: numRows }, () => new Array(5).fill(""));
+    let grid = Array.from({ length: numRows }, () =>
+      new Array(wordLength).fill("")
+    );
 
     const wildcardPct = 0.04; // percent chance a letter will be a wildcard
 
     // For each column, distribute the letters across random rows
-    for (let col = 0; col < 5; col++) {
+    for (let col = 0; col < wordLength; col++) {
       // Extract the letter for this column from each word
       let columnLetters = words.map((word) => word[col] || ""); // Use an empty string if the letter doesn't exist
 
@@ -577,7 +580,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Shift the filler grid down
     for (let row = 0; row < fillerGrid.length - 1; row++) {
-      for (let col = 0; col < 5; col++) {
+      for (let col = 0; col < wordLength; col++) {
         fillerGrid[row][col] = fillerGrid[row + 1][col];
       }
     }
