@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const gameTime = 120; // game length in seconds
   const timeAddedPerWord = 10; // seconds added to the timer per word found
   const wcChar = "⭐️"; // wildcard character
+  const debug = false;
 
   // dom objects
   const helpModal = document.getElementById("helpModal");
@@ -84,6 +85,7 @@ document.addEventListener("DOMContentLoaded", () => {
     initializeGame();
     startTimer();
     gameLoop();
+    if (debug) endGame("debugging");
   }
 
   function gameLoop() {

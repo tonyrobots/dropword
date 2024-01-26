@@ -148,7 +148,7 @@ h3 {
   font-weight: bold;
 }
 
-.stats-container {
+.main-stats-container {
   display: flex;
   flex-direction: column;
   padding: 5px 10px;
@@ -188,6 +188,11 @@ h3 {
   gap: 10px;
 }
 
+.stats-flex {
+  display: flex;
+  gap: 10px;
+}
+
 .stat {
   /* margin: 10px 0; */
   /* center; */
@@ -207,8 +212,16 @@ h3 {
 .label {
   font-size: 0.85em;
 }
+@media (max-width: 600px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr); /* 2 columns for small screens */
+  }
+  /* .number {
+    font-size: 1.1em; /* Smaller font size for small screens */
+  /* } */
+}
 
-#score-container {
+/* #score-container {
   top: 0;
   right: 0px;
 }
@@ -216,7 +229,7 @@ h3 {
 #valid-words-container {
   top: 0;
   left: 0;
-}
+} */
 
 .flex-column-container {
   display: flex;
