@@ -2,7 +2,7 @@ import * as Ui from "./uiHandling.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   // globals
-  const gameName = "Tumblewords";
+  const gameName = "Tumblewords Lite";
   const visibleRows = 5; // Number of rows visible on the screen
   const wordLength = 4;
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
